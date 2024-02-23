@@ -1672,8 +1672,7 @@ public:
     //Initializer
     Graph G;
 
-    TEN(const int n, const int eT, const int gtype, const int tType, const int seed, const int sT = 0) : G(n, eT, sT),
-                                                                                                         timedNodes(n),
+    TEN(const int n, const int eT, const int gtype, const int tType, const int seed, const int sT = 0) : timedNodes(n),
                                                                                                          fTimedNodes(n,
                                                                                                                      vector<set_timedNode>(
                                                                                                                              n)),
@@ -1682,7 +1681,8 @@ public:
                                                                                                                              n)),
                                                                                                          mangroves(n),
                                                                                                          mangroveMap(
-                                                                                                                 n) {
+                                                                                                                 n),
+                                                                                                         G(n, eT, sT) {
         /*number of nodes, end time, graph type, travel time type, seed, start time (optional)*/
         string filename =
                 "Data/n" + to_string(n) + "T" + to_string(eT) + "gt" + to_string(gtype) + "tt" + to_string(tType) +

@@ -1,0 +1,4 @@
+/home/delus/.local/share/JetBrains/Toolbox/apps/clion/bin/cmake/linux/x64/bin/cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_MAKE_PROGRAM=/home/delus/.local/share/JetBrains/Toolbox/apps/clion/bin/ninja/linux/x64/ninja -G Ninja -S /home/delus/Documents/school/TDSPP -B /home/delus/Documents/school/TDSPP/cmake-build-release
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/delus/Documents/school/TDSPP/cmake-build-release
