@@ -362,7 +362,7 @@ public:
             return lhs.time < rhs.time;
         }
     };
-    vector<set<MDTimedNode, MDTimednode_compare>> timednodes;
+    vector<set<MDTimedNode, MDTimednode_compare>> timedNodes;
     struct Abspt {
         vector<const MDTimedNode*> nodes;
         vector<double> times;
@@ -404,7 +404,7 @@ public:
         newabspt.ub = newabspt.times[G.endN] - newabspt.times[G.startN];
         for (int i = 0; i < G.n; i++) {
             MDTimedNode timednode(newabspt.times[i]);
-            auto it = timednodes[i].insert(timednode);
+            auto it = timedNodes[i].insert(timednode);
             newabspt.nodes[i] = &(*it.first);
         }
         //Find LB for new ABSPT
@@ -1041,7 +1041,7 @@ public:
     }
     //Initializer
     Graph G;
-    TEN(const int n, const int eT, const int gtype, const int seed, const int ttype, const int sT = 0) : G(n, eT, sT), timednodes(n), ftimednodes(n, vector<set_timednode>(n)), btimednodes(n, vector<set_timednode>(n)), mangroves(n), mangroveMap(n) {
+    TEN(const int n, const int eT, const int gtype, const int seed, const int ttype, const int sT = 0) : G(n, eT, sT), timedNodes(n), ftimednodes(n, vector<set_timednode>(n)), btimednodes(n, vector<set_timednode>(n)), mangroves(n), mangroveMap(n) {
         string filename = "Data/n" + to_string(n) + "T" + to_string(eT) + "gt" + to_string(gtype) + "tt" + to_string(ttype) + "s" + to_string(seed) + ".csv";
         cout << "opening:" << filename << endl;
         std::ifstream nodeFile(filename.c_str());

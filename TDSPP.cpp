@@ -8,44 +8,50 @@
 #include <map>
 #include <unordered_map>
 #include <fstream>
-#include <chrono> 
+#include <chrono>
 #include <sstream>
 #include <algorithm>
 #include <queue>
 #include <set>
 #include <stack>
 #include <assert.h>
+#include <math.h>
+#include <cmath>
+#include <climits>
+
 using namespace std;
-typedef pair<int,int> type_arc;
+typedef pair<int, int> type_arc;
 typedef pair<int, int> type_bp;
 
 struct Output {
     bool md = 0;
     bool ddd = 0;
-    int bpexplored = 0;
+    int bpExplored = 0;
     double runtime = 0;
     double addruntime = 0;
     double spruntime = 0;
     int arctotal = 0;
-    int subpathtotal = 1;
-    double optval = 0;
+    int subPathTotal = 1;
+    double optVal = 0;
     int iter = 0;
-    void writeOutputCSV(string& filename) {
+
+    void writeOutputCSV(string &filename) {
         ofstream myFile(filename, ofstream::app);
         myFile << this->md << ',';
         myFile << this->ddd << ',';
-        myFile << this->bpexplored << ',';
+        myFile << this->bpExplored << ',';
         myFile << this->runtime << ',';
         myFile << this->addruntime << ',';
         myFile << this->spruntime << ',';
         myFile << this->arctotal << ',';
-        myFile << this->subpathtotal << ',';
+        myFile << this->subPathTotal << ',';
         myFile << this->iter << ',';
-        myFile << this->optval << endl;
+        myFile << this->optVal << endl;
         myFile.close();
         return;
     }
 };
+
 class SummaryOutput {
 public:
     bool md;
@@ -74,7 +80,8 @@ public:
     double avgspruntime = 0;
     int iter = 0;
     string filename;
-    SummaryOutput(string filename, int n, int T, int gtype, int ttype, int numseed, bool md){
+
+    SummaryOutput(string filename, int n, int T, int gtype, int ttype, int numseed, bool md) {
         this->filename = filename;
         this->n = n;
         this->T = T;
@@ -83,36 +90,38 @@ public:
         this->numseed = numseed;
         this->md = md;
     }
-    void updateSummaryOutput(Output& output) {
+
+    void updateSummaryOutput(Output &output) {
         if (output.ddd) {
-            bpexplored += output.bpexplored;
+            bpexplored += output.bpExplored;
             runtime += output.runtime;
             totaladdruntime += output.addruntime;
             totalspruntime += output.spruntime;
             arctotal += output.arctotal;
-            subpathtotal += output.subpathtotal;
+            subpathtotal += output.subPathTotal;
             gavgpercenttime *= output.runtime;
             iter += output.iter;
-        }
-        else {
-            bptotal = output.bpexplored;
+        } else {
+            bptotal = output.bpExplored;
             enumtime += output.runtime;
             gavgpercenttime /= output.runtime;
         }
         return;
     }
+
     void calcSummaryOutput() {
-        avgarc = (double)arctotal / numseed;
-        avgbpexplored = (double)bpexplored / numseed;
+        avgarc = (double) arctotal / numseed;
+        avgbpexplored = (double) bpexplored / numseed;
         avgenumtime = enumtime / numseed;
         avgruntime = runtime / numseed;
         avgaddruntime = totaladdruntime / numseed;
         avgspruntime = totalspruntime / numseed;
-        avgsubpath = (double)subpathtotal / numseed;
+        avgsubpath = (double) subpathtotal / numseed;
         percenttime = 100 * avgruntime / avgenumtime;
-        percentbp = 100 * (double)avgbpexplored / bptotal;
+        percentbp = 100 * (double) avgbpexplored / bptotal;
         return;
     }
+
     void writeSOutputCSV() {
         ofstream myFile(filename, ofstream::app);
         myFile << n << ',';
@@ -123,7 +132,7 @@ public:
         myFile << avgbpexplored << ',';
         myFile << bptotal << ',';
         myFile << percentbp << ',';
-        myFile << pow(gavgpercenttime,1.0/numseed) << ',';
+        myFile << pow(gavgpercenttime, 1.0 / numseed) << ',';
         myFile << avgaddruntime << ',';
         myFile << avgspruntime << ',';
         myFile << avgarc << ',';
@@ -136,7 +145,8 @@ public:
         return;
     }
 };
-void writeOutputCSVHeader(const string& filename) {
+
+void writeOutputCSVHeader(const string &filename) {
     ofstream myFile(filename, ofstream::app);
     myFile << "Is MD?" << ',';
     myFile << "Is DDD?" << ',';
@@ -151,7 +161,8 @@ void writeOutputCSVHeader(const string& filename) {
     myFile.close();
     return;
 }
-void writeSOutputCSVHeader(const string& filename) {
+
+void writeSOutputCSVHeader(const string &filename) {
     ofstream myFile(filename, ofstream::app);
     myFile << "n" << ',';
     myFile << "T" << ',';
@@ -179,21 +190,22 @@ public:
     //Node
     struct Node {
         int nodeID = 0;
-        string nodeName = "";
+        string nodeName;
+
         Node(int ID, string name = "") {
             nodeID = ID;
-            if (name == "") name = to_string(ID);
+            if (name.empty()) name = to_string(ID);
             nodeName = name;
         }
     };
 
     //Initialization
-    Graph(const int n, const int eT, const int sT = 0, const int startn = 0, const int endn = -1) {
+    Graph(const int n, const int eT, const int sT = 0, const int start_n = 0, const int end_n = -1) {
         startT = sT;
         endT = eT;
         this->n = n;
-        startN = startn;
-        if (endn != -1) endN = endn;
+        startN = start_n;
+        if (end_n != -1) endN = end_n;
         else endN = n - 1;
         addNodes(n);
     }
@@ -201,18 +213,16 @@ public:
     void addNode(const int i) {
         Node newNode(i);
         nodes.push_back(newNode);
-        //indMap[i] = &newNode;
-        return;
-    }
+   }
 
     void addNodes(const int n) {
         for (int i = 0; i < n; i++) {
             addNode(i);
         }
-        return;
-    }
+   }
 
-    void addArc(const int startind, const int endind, vector<double> traveltimes) {
+    void addArc(const int start_idx, const int end_idx, vector<double> travel_times) {
+
         /*
         adds arc information to maps
         to get ifloortraveltimes:
@@ -224,21 +234,21 @@ public:
 
         */
         //Simple Maps
-        type_arc arc = { startind,endind };
-        inMap[endind].push_back(startind);
-        outMap[startind].push_back(endind);
-        ttMap[arc] = traveltimes;
+        type_arc arc = {start_idx, end_idx};
+        inMap[end_idx].push_back(start_idx);
+        outMap[start_idx].push_back(end_idx);
+        ttMap[arc] = travel_times;
         //ifloorMap
         int T = endT - startT + 1;
         int curr = 0;
         vector<int> ifloortraveltimes(T);
         for (int i = 0; i < T; i++) {
-            while (curr <= T - 1 && curr + traveltimes[curr] <= i) {
+            while (curr <= T - 1 && curr + travel_times[curr] <= i) {
                 curr++;
             }
             ifloortraveltimes[i] = curr - 1;
             //cout << "floor:";
-            //cout << i << ',' << traveltimes[i] << ',';
+            //cout << i << ',' << travel_times[i] << ',';
             //cout << i << ',' << ifloortraveltimes[i] << endl;
         }
         ittfloorMap[arc] = ifloortraveltimes;
@@ -246,24 +256,24 @@ public:
         curr = T - 1;
         vector<int> iceiltraveltimes(T);
         for (int i = T - 1; i >= 0; i--) {
-            while (curr >=0 && curr + traveltimes[curr] >= i) {
+            while (curr >= 0 && curr + travel_times[curr] >= i) {
                 curr--;
             }
             iceiltraveltimes[i] = curr + 1;
             //cout << "ceil:";
-            //cout << i << ',' << traveltimes[i] << ',';
+            //cout << i << ',' << travel_times[i] << ',';
             //cout << i << ',' << iceiltraveltimes[i] << endl;
         }
         ittceilMap[arc] = iceiltraveltimes;
-        //minttMap and minindttMap
+        //minttMap and min_idx_ttMap
         vector<vector<double>> mintt(T, vector<double>(T, INT_MAX));
         vector<vector<int>> minindtt(T, vector<int>(T, -1));
         for (int left = 0; left < T; left++) {
-            double currmin = traveltimes[left];
+            double currmin = travel_times[left];
             int currind = left;
             for (int right = left; right < T; right++) {
-                if (currmin > traveltimes[right]) {
-                    currmin = traveltimes[right];
+                if (currmin > travel_times[right]) {
+                    currmin = travel_times[right];
                     currind = right;
                 }
                 mintt[left][right] = currmin;
@@ -271,9 +281,8 @@ public:
             }
         }
         minttMap[arc] = mintt;
-        minindttMap[arc] = minindtt;
-        return;
-    }
+        min_idx_ttMap[arc] = minindtt;
+   }
 
     //Properties
     int startT = 0;
@@ -289,89 +298,91 @@ public:
     map<type_arc, vector<int>> ittfloorMap; //returns floor guess for each integer endt
     map<type_arc, vector<int>> ittceilMap; //returns ceil guess for each integer endt
     map<type_arc, vector<vector<double>>> minttMap; //returns table of min travel time for arc in interval
-    map<type_arc, vector<vector<int>>> minindttMap; //returns table of departure time of min travel times for arc in interval
+    map<type_arc, vector<vector<int>>> min_idx_ttMap; //returns table of departure time of min travel times for arc in interval
     typedef pair<int, double> type_timednode;
+
     struct timednode_less {
-        bool operator() (const type_timednode& lhs, const type_timednode& rhs) const {
+        bool operator()(const type_timednode &lhs, const type_timednode &rhs) const {
             return lhs.second < rhs.second;
         }
     };
+
     struct timednode_greater {
-        bool operator() (const type_timednode& lhs, const type_timednode& rhs) const {
+        bool operator()(const type_timednode &lhs, const type_timednode &rhs) const {
             return lhs.second > rhs.second;
         }
     };
 
     //Functions
-    double TT(const int startind, const int endind, const double startt) {
+    double TT(const int start_idx, const int end_idx, const double start_t) { // TT = Time Travel
         /*
-        returns travel time of arc from startind to endind with departure time startt
+        returns travel time of arc from start_idx to end_idx with departure time start_t
         procedure:
-        if startt<startT use travel time at startT
-        if startt>endT use travel time at endT
-        otherwise interpolate travel time between floor(startt) and ceil(startt)
+        if start_t<startT use travel time at startT
+        if start_t>endT use travel time at endT
+        otherwise interpolate travel time between floor(start_t) and ceil(start_t)
         */
-        pair<int, int> arc = { startind, endind };
-        if (startt < startT) return ttMap[arc][0];
-        else if (startt > endT) return ttMap[arc][endT - startT];
-        else if (startt == (int)startt) return ttMap[arc][(int)startt];
+        pair<int, int> arc = {start_idx, end_idx};
+        if (start_t < startT) return ttMap[arc][0];
+        else if (start_t > endT) return ttMap[arc][endT - startT];
+        else if (start_t == (int) start_t) return ttMap[arc][(int) start_t];
         else {
-            double fractpart, intpart;
-            fractpart = modf(startt - startT, &intpart);
-            return ttMap[arc][(int)intpart] + fractpart * (ttMap[arc][ceil(startt) - startT] - ttMap[arc][(int)intpart]);
+            double fract_part, int_part;
+            fract_part = modf(start_t - startT, &int_part);
+            return ttMap[arc][(int) int_part] +
+                   fract_part * (ttMap[arc][ceil(start_t) - startT] - ttMap[arc][(int) int_part]);
         }
     }
 
-    double iTT(const int startind, const int endind, const double endt) {
+    double iTT(const int start_idx, const int end_idx, const double end_t) { // iTT = Inverse Time Travel
         /*
-        returns travel time of arc from startind to endind with arrival time endt
+        returns travel time of arc from start_idx to end_idx with arrival time end_t
         procedure:
-        if endt<startT+ttMap[arc][0] use travel time at startT
-        if endt>endT+ttMap[arc][endT-startT] use travel time at endT
-        otherwise interpolate travel time between floor*(endt) and ceil*(endt)
-        (separate case for endt integer)
+        if end_t<startT+ttMap[arc][0] use travel time at startT
+        if end_t>endT+ttMap[arc][endT-startT] use travel time at endT
+        otherwise interpolate travel time between floor*(end_t) and ceil*(end_t)
+        (separate case for end_t integer)
         where * indicates rounding to nearest endpoint of breakpoints, see below.
 
-        get guess of left and right breakpoint: ittMap[arc][floor(endt)],ittMap[arc][floor(endt)]
-        refine guesses until we get correct breakpoints leftprev and rightprev
-        get leftnext and rightnext
+        get guess of left and right breakpoint: ittMap[arc][floor(end_t)],ittMap[arc][floor(end_t)]
+        refine guesses until we get correct breakpoints leftPrev and rightPrev
+        get leftNext and rightNext
 
-        find a such that ln+a(rn-ln)=endt
-        a=(endt-ln)/(rn-ln)
-        return ttMap[arc][lp+a(rp-lp)]=ttMap[arc][lp+(endt-ln)/(rn-ln)] since rp-lp=1
+        find a such that ln+a(rn-ln)=end_t
+        a=(end_t-ln)/(rn-ln)
+        return ttMap[arc][lp+a(rp-lp)]=ttMap[arc][lp+(end_t-ln)/(rn-ln)] since rp-lp=1
         
 
         */
-        pair<int, int> arc = { startind, endind };
-        if (endt < startT + ttMap[arc][0]) return ttMap[arc][0];
-        if (endt > endT + ttMap[arc][endT - startT]) return ttMap[arc][endT - startT];
-        int leftprev, rightprev;
-        if (endt > endT) {
-            leftprev = ittfloorMap[arc][endT - startT];
-            rightprev = ittceilMap[arc][endT - startT];
+        pair<int, int> arc = {start_idx, end_idx};
+        if (end_t < startT + ttMap[arc][0]) return ttMap[arc][0];
+        if (end_t > endT + ttMap[arc][endT - startT]) return ttMap[arc][endT - startT];
+        int leftPrev, rightPrev;
+        if (end_t > endT) {
+            leftPrev = ittfloorMap[arc][endT - startT];
+            rightPrev = ittceilMap[arc][endT - startT];
+        } else {
+            leftPrev = ittfloorMap[arc][floor(end_t)];
+            rightPrev = ittceilMap[arc][ceil(end_t)];
         }
-        else {
-            leftprev = ittfloorMap[arc][floor(endt)];
-            rightprev = ittceilMap[arc][ceil(endt)];
+        if (leftPrev == rightPrev) return ttMap[arc][leftPrev];
+        //cout << "before" << leftPrev << ',' << rightPrev << endl;
+        while (rightPrev - leftPrev > 1) {
+            if (leftPrev + 1 + ttMap[arc][leftPrev + 1] <= end_t) leftPrev++;
+            if (rightPrev - 1 + ttMap[arc][rightPrev - 1] > end_t) rightPrev--;
         }
-        if (leftprev == rightprev) return ttMap[arc][leftprev];
-        //cout << "before" << leftprev << ',' << rightprev << endl;
-        while (rightprev - leftprev > 1) {
-            if (leftprev + 1 + ttMap[arc][leftprev + 1] <= endt) leftprev++;
-            if (rightprev - 1 + ttMap[arc][rightprev - 1] > endt) rightprev--;
-        }
-        //cout << "after" << leftprev << ',' << rightprev << endl;
-        double leftnext = leftprev + ttMap[arc][leftprev];
-        double rightnext = rightprev + ttMap[arc][rightprev];
-        //cout << "next" << leftnext << ',' << rightnext << endl;
-        return TT(startind, endind, leftprev + (endt - leftnext) / (rightnext - leftnext));
+        //cout << "after" << leftPrev << ',' << rightPrev << endl;
+        double leftNext = leftPrev + ttMap[arc][leftPrev];
+        double rightNext = rightPrev + ttMap[arc][rightPrev];
+        //cout << "next" << leftNext << ',' << rightNext << endl;
+        return TT(start_idx, end_idx, leftPrev + (end_t - leftNext) / (rightNext - leftNext));
     }
 
-    double FSP(const vector<double>& startts, const vector<double>& endts) {
-        vector<double> fspt(n, endT + 1);
+    double FSP(const vector<double> &start_ts, const vector<double> &end_ts) { // Forward shortest path
+        vector<double> fspt(n, endT + 1); // Forward shortest path tree
         priority_queue<type_timednode, vector<type_timednode>, timednode_greater> pq;
-        pq.push({ startN,startts[startN] });
-        fspt[startN] = startts[startN];
+        pq.push({startN, start_ts[startN]});
+        fspt[startN] = start_ts[startN];
         while (!pq.empty()) {
             int i = pq.top().first;
             if (i == endN) break;
@@ -383,12 +394,12 @@ public:
             }
             //cout << "popping:" << i << ',' << fspt[i] << endl;
             pq.pop();
-            for (int j : outMap[i]) {
-                //cout << i << j << startts[i] << endts[i] << endl;
-                double weight = minTT(i, j, startts[i], endts[i]);
+            for (int j: outMap[i]) {
+                //cout << i << j << start_ts[i] << end_ts[i] << endl;
+                double weight = minTT(i, j, start_ts[i], end_ts[i]);
                 if (fspt[j] > fspt[i] + weight) {
                     fspt[j] = fspt[i] + weight;
-                    pq.push({ j,fspt[j] });
+                    pq.push({j, fspt[j]});
                     //cout << "pushing:" << j << ',' << fspt[j] << endl;
                 }
             }
@@ -400,12 +411,12 @@ public:
 
     }
 
-    vector<double> FSPT(const int startind, const double startt, vector<type_arc>& arcs) {
+    vector<double> FSPT(const int start_idx, const double start_t, vector<type_arc> &arcs) {
         vector<double> fspt(n, endT + 1);
         vector<int> pred(n, -1);
         priority_queue<type_timednode, vector<type_timednode>, timednode_greater> pq;
-        pq.push({ startind,startt });
-        fspt[startind] = startt;
+        pq.push({start_idx, start_t});
+        fspt[start_idx] = start_t;
         while (!pq.empty()) {
             int i = pq.top().first;
             //Care double comparison
@@ -416,12 +427,12 @@ public:
             }
             //cout << "popping:" << i << ',' << fspt[i] << endl;
             pq.pop();
-            for (int j : outMap[i]) {
+            for (int j: outMap[i]) {
                 double weight = TT(i, j, fspt[i]);
                 if (fspt[j] > fspt[i] + weight) {
                     fspt[j] = fspt[i] + weight;
                     pred[j] = i;
-                    pq.push({ j,fspt[j] });
+                    pq.push({j, fspt[j]});
                     //cout << "pushing:" << j << ',' << fspt[j] << endl;
                 }
             }
@@ -432,7 +443,7 @@ public:
         for (int j = 0; j < n; j++) {
             if (pred[j] == -1) continue;
             else {
-                arcs.push_back({ pred[j],j });
+                arcs.push_back({pred[j], j});
             }
         }
         //printf("Times of Nodes in FSPT\n");
@@ -443,12 +454,13 @@ public:
         //    printf("%d \t\t %d\n", arcs[ind].first, arcs[ind].second);
         return fspt;
     }
-    vector<double> BSPT(const int endind, const double endt, vector<type_arc>& arcs) {
-        vector<double> bspt(n, startT - 1);
-        vector<int> succ(n, -1);
+
+    vector<double> BSPT(const int end_idx, const double end_t, vector<type_arc> &arcs) {
+        vector<double> bspt(n, startT - 1); // Backward shortest path tree
+        vector<int> successor(n, -1);
         priority_queue<type_timednode, vector<type_timednode>, timednode_less> pq;
-        pq.push({ endind,endt });
-        bspt[endind] = endt;
+        pq.push({end_idx, end_t});
+        bspt[end_idx] = end_t;
         while (!pq.empty()) {
             int j = pq.top().first;
             //Care double comparison
@@ -459,12 +471,12 @@ public:
             }
             //cout << "popping:" << j << ',' << bspt[j] << endl;
             pq.pop();
-            for (int i : inMap[j]) {
+            for (int i: inMap[j]) {
                 double weight = iTT(i, j, bspt[j]);
                 if (bspt[i] < bspt[j] - weight) {
                     bspt[i] = bspt[j] - weight;
-                    succ[i] = j;
-                    pq.push({ i,bspt[i] });
+                    successor[i] = j;
+                    pq.push({i, bspt[i]});
                     //cout << "pushing:" << i << ',' << bspt[i] << endl;
                 }
             }
@@ -473,9 +485,9 @@ public:
             //    printf("%d \t\t %f\n", j, bspt[j]);
         }
         for (int i = 0; i < n; i++) {
-            if (succ[i] == -1) continue;
+            if (successor[i] == -1) continue;
             else {
-                arcs.push_back({ i,succ[i] });
+                arcs.push_back({i, successor[i]});
             }
         }
         //printf("Times of Nodes in BSPT\n");
@@ -487,22 +499,22 @@ public:
         return bspt;
     }
 
-    double minTT(const int startind, const int endind, double leftt, double rightt) {
-        /* Finds departure time of minimum travel time for arc (startind,endind) in interval [leftt,rightt]*/
-        leftt = min((double)endT - startT, max(0.0, leftt - startT));
-        rightt = min((double)endT - startT, max(0.0, rightt - startT));
-        double ans = min(TT(startind, endind, leftt), TT(startind, endind, rightt));
-        return min(ans, minttMap[{startind, endind}][ceil(leftt)][floor(rightt)]);
+    double minTT(const int start_idx, const int end_idx, double left_t, double right_t) {
+        /* Finds departure time of minimum travel time for arc (start_idx,end_idx) in interval [left_t,right_t]*/
+        left_t = min((double) endT - startT, max(0.0, left_t - startT));
+        right_t = min((double) endT - startT, max(0.0, right_t - startT));
+        double ans = min(TT(start_idx, end_idx, left_t), TT(start_idx, end_idx, right_t));
+        return min(ans, minttMap[{start_idx, end_idx}][ceil(left_t)][floor(right_t)]);
     }
 
-    int minindTT(const int startind, const int endind, const int leftt, const int rightt) {
-        return minindttMap[{startind, endind}][leftt][rightt];
+    int min_idx_TT(const int start_idx, const int end_idx, const int left_t, const int right_t) {
+        return min_idx_ttMap[{start_idx, end_idx}][left_t][right_t];
     }
 
     bool checkFIFO() {
         for (int i = 0; i < n; i++) {
-            for (int j : outMap[i]) {
-                for (int t = 1; t <= endT-startT; t++) {
+            for (int j: outMap[i]) {
+                for (int t = 1; t <= endT - startT; t++) {
                     if (ttMap[{i, j}][t] + 1 < ttMap[{i, j}][t - 1]) {
                         cout << i << ',' << j << endl;
                         cout << t - 1 << ',' << ttMap[{i, j}][t - 1] << endl;
@@ -520,150 +532,163 @@ class TEN {
 public:
     //Common
     //Minimum Duration Structures
-    struct MDTimedNode {
+    struct MDTimedNode { // Minimum Duration Timed Node
         double time = 0;
+
         MDTimedNode(double t) {
             time = t;
         }
     };
-    struct MDTimednode_compare {
-        bool operator() (const MDTimedNode& lhs, const MDTimedNode& rhs) const {
+
+    struct MDTimedNode_compare { // Compare for set data structure
+        bool operator()(const MDTimedNode &lhs, const MDTimedNode &rhs) const {
             return lhs.time < rhs.time;
         }
     };
-    vector<set<MDTimedNode, MDTimednode_compare>> timednodes;
-    struct Abspt {
-        vector<const MDTimedNode*> nodes;
+
+    vector<set<MDTimedNode, MDTimedNode_compare>> timedNodes;
+
+    struct Abspt { // Arc-completed backward shortest path tree
+        vector<const MDTimedNode *> nodes;
         vector<double> times;
         double lb = 0;
         double ub = INT_MAX;
-        int bpnode = -1;
-        int bptime = -1;
-        Abspt() :nodes(0), times(0) {
-            bpnode = 0;
-            bptime = 0;
+        int bpNode = -1; // Breakpoint node
+        int bpTime = -1; // Breakpoint time
+
+        Abspt() : nodes(0), times(0) {
+            bpNode = 0;
+            bpTime = 0;
         }
-        Abspt(int i, int t, int n) :nodes(n), times(n) {
-            bpnode = i;
-            bptime = t;
+
+        Abspt(int i, int t, int n) : nodes(n), times(n) {
+            bpNode = i;
+            bpTime = t;
         }
     };
-    struct Abspt_compare {
-        bool operator() (const Abspt& lhs, const Abspt& rhs) const {
+
+    struct Abspt_compare { // Compare for set data structure
+        bool operator()(const Abspt &lhs, const Abspt &rhs) const {
             return lhs.times[0] < rhs.times[0];
         }
     };
-    struct Abspt_comparelb {
-        bool operator() (const set<Abspt, Abspt_compare>::iterator& lhs, const set<Abspt, Abspt_compare>::iterator& rhs) const {
+
+    struct Abspt_compare_lb { // Compare for set data structure
+        bool operator()(const set<Abspt, Abspt_compare>::iterator &lhs,
+                        const set<Abspt, Abspt_compare>::iterator &rhs) const {
             return lhs->lb < rhs->lb;
         }
     };
-    struct Abspt_compareub {
-        bool operator() (const set<Abspt, Abspt_compare>::iterator& lhs, const set<Abspt, Abspt_compare>::iterator& rhs) const {
+
+    struct Abspt_compare_ub { // Compare for set data structure
+        bool operator()(const set<Abspt, Abspt_compare>::iterator &lhs,
+                        const set<Abspt, Abspt_compare>::iterator &rhs) const {
             return lhs->ub < rhs->ub;
         }
     };
-    set<Abspt,Abspt_compare> abspts;
-    typedef set<Abspt, Abspt_compare>::iterator Absptit;
-    set<Absptit, Abspt_comparelb> absptlbs;
-    set<Absptit, Abspt_compareub> absptubs;
+
+    set<Abspt, Abspt_compare> abspts;
+    typedef set<Abspt, Abspt_compare>::iterator Abspt_it;
+    set<Abspt_it, Abspt_compare_lb> abspt_lbs;
+    set<Abspt_it, Abspt_compare_ub> abspt_ubs;
 
     //Minimum Duration Functions
-    void addABSPT(const int bpnode, const int bptime) {
-        //cout << "Adding ABSPT:(" << bpnode << ',' << bptime << ')' << endl;
-        Abspt newabspt(bpnode, bptime, G.n);
+    void addABSPT(const int bpNode, const int bpTime) {
+        //cout << "Adding ABSPT:(" << bpNode << ',' << bpTime << ')' << endl;
+        Abspt new_abspt(bpNode, bpTime, G.n);
         vector<type_arc> arcs = {};
-        double endTime = G.FSPT(bpnode, bptime, arcs)[G.endN];
+        double endTime = G.FSPT(bpNode, bpTime, arcs)[G.endN];
         arcs = {};
-        newabspt.times = G.BSPT(G.endN, endTime, arcs);
-        newabspt.times[bpnode] = bptime; //for floating point errors.
-        newabspt.ub = newabspt.times[G.endN] - newabspt.times[G.startN];
+        new_abspt.times = G.BSPT(G.endN, endTime, arcs);
+        new_abspt.times[bpNode] = bpTime; //for floating point errors.
+        new_abspt.ub = new_abspt.times[G.endN] - new_abspt.times[G.startN];
         for (int i = 0; i < G.n; i++) {
-            MDTimedNode timednode(newabspt.times[i]);
-            auto it = timednodes[i].insert(timednode);
-            newabspt.nodes[i] = &(*it.first);
+            MDTimedNode timedNode(new_abspt.times[i]);
+            auto it = timedNodes[i].insert(timedNode);
+            new_abspt.nodes[i] = &(*it.first);
         }
         //Find LB for new ABSPT
-        set<Abspt, Abspt_compare>::iterator it = abspts.upper_bound(newabspt);
+        set<Abspt, Abspt_compare>::iterator it = abspts.upper_bound(new_abspt);
         if (it == abspts.end()) {
-            newabspt.lb = newabspt.ub;
-        }
-        else {
-            newabspt.lb = G.FSP(newabspt.times, it->times);
+            new_abspt.lb = new_abspt.ub;
+        } else {
+            new_abspt.lb = G.FSP(new_abspt.times, it->times);
         }
         //Update LB for prev ABSPT
         if (it == abspts.begin()) {
             cout << "no previous ABSPT, this should only occur during first or second ABSPT" << endl;
-        }
-        else {
+        } else {
             it--;
-            Abspt prevabspt = *it;
-            absptlbs.erase(it);
-            absptubs.erase(it);
+            Abspt prevAbspt = *it;
+            abspt_lbs.erase(it);
+            abspt_ubs.erase(it);
             abspts.erase(*it);
-            prevabspt.lb = G.FSP(prevabspt.times, newabspt.times);
-            auto itbool = abspts.insert(prevabspt);
-            it = itbool.first;
-            //cout << "Updating ABSPT:(" << it->bpnode << ',' << it->bptime << ')' << endl;
-            absptlbs.insert(it);
-            absptubs.insert(it);
+            prevAbspt.lb = G.FSP(prevAbspt.times, new_abspt.times);
+            auto it_bool = abspts.insert(prevAbspt);
+            it = it_bool.first;
+            //cout << "Updating ABSPT:(" << it->bpNode << ',' << it->bpTime << ')' << endl;
+            abspt_lbs.insert(it);
+            abspt_ubs.insert(it);
         }
-        auto itbool = abspts.insert(newabspt);
-        it = itbool.first;
-        //cout << "Inserting ABSPT:(" << it->bpnode << ',' << it->bptime << ')' << endl;
-        absptlbs.insert(it);
-        absptubs.insert(it);
+        auto it_bool = abspts.insert(new_abspt);
+        it = it_bool.first;
+        //cout << "Inserting ABSPT:(" << it->bpNode << ',' << it->bpTime << ')' << endl;
+        abspt_lbs.insert(it);
+        abspt_ubs.insert(it);
         return;
     }
-    void resolveABSPT(Abspt& curr) {
-        Abspt currabspt = curr;
-        Absptit it = abspts.find(curr);
-        absptlbs.erase(it);
-        absptubs.erase(it);
+
+    void resolveABSPT(Abspt &curr) {
+        Abspt currAbspt = curr;
+        Abspt_it it = abspts.find(curr);
+        abspt_lbs.erase(it);
+        abspt_ubs.erase(it);
         abspts.erase(*it);
-        currabspt.lb = currabspt.ub;
-        auto itbool = abspts.insert(currabspt);
-        it = itbool.first;
-        //cout << "Resolving ABSPT:(" << it->bpnode << ',' << it->bptime << ')' << endl;
-        absptlbs.insert(it);
-        absptubs.insert(it);
+        currAbspt.lb = currAbspt.ub;
+        auto it_bool = abspts.insert(currAbspt);
+        it = it_bool.first;
+        //cout << "Resolving ABSPT:(" << it->bpNode << ',' << it->bpTime << ')' << endl;
+        abspt_lbs.insert(it);
+        abspt_ubs.insert(it);
     }
-    type_bp findBP(Abspt& curr, int option = 1) {
+
+    type_bp findBP(Abspt &curr, int option = 1) {
         auto it = abspts.find(curr);
         it++;
-        int bpnode = -1;
-        int bptime = -1;
-        if (it == abspts.end()) return { bpnode,bptime };
+        int bpNode = -1;
+        int bpTime = -1;
+        if (it == abspts.end()) return {bpNode, bpTime};
         for (int i = 0; i < G.n; i++) {
             if (G.outMap[i].empty()) continue;
             double dleftt = curr.times[i];
             double drightt = it->times[i];
             int leftt, rightt;
-            if (dleftt == (int)dleftt) leftt = dleftt + 1;
+            if (dleftt == (int) dleftt) leftt = dleftt + 1;
             else leftt = ceil(dleftt);
-            if (drightt == (int)drightt) rightt = drightt - 1;
+            if (drightt == (int) drightt) rightt = drightt - 1;
             else rightt = floor(drightt);
             if (leftt > rightt) continue;
             else {
-                bpnode = i;
-                if (option == 0) bptime = G.minindTT(i, G.outMap[i][0], leftt, rightt); //min
-                else if (option == 1) bptime = (leftt + rightt) / 2; //med
-                else if (option == 2) bptime = leftt + rand() % (rightt - leftt + 1); //rand
-                return { bpnode, bptime };
+                bpNode = i;
+                if (option == 0) bpTime = G.min_idx_TT(i, G.outMap[i][0], leftt, rightt); //min
+                else if (option == 1) bpTime = (leftt + rightt) / 2; //med
+                else if (option == 2) bpTime = leftt + rand() % (rightt - leftt + 1); //rand
+                return {bpNode, bpTime};
             }
         }
-        return { bpnode,bptime };
+        return {bpNode, bpTime};
     }
+
     Output findMD() {
-        int bpexplored = 0;
+        int bpExplored = 0;
         int iter = 0;
         auto start = chrono::high_resolution_clock::now();
         addABSPT(G.endN, G.endT);
         addABSPT(G.startN, G.startT);
         iter += 2;
-        bpexplored += 2;
-        auto lbit = absptlbs.begin();
-        auto ubit = absptubs.begin();
+        bpExplored += 2;
+        auto lbit = abspt_lbs.begin();
+        auto ubit = abspt_ubs.begin();
         //cout << "current lower bound=" << (*lbit)->lb << endl;
         //cout << "current upper bound=" << (*ubit)->ub << endl;
         //printCurrentABSPTs();
@@ -672,13 +697,12 @@ public:
             type_bp nextbp = findBP(myabspt);
             if (nextbp.first == -1) {
                 resolveABSPT(myabspt);
-            }
-            else {
+            } else {
                 addABSPT(nextbp.first, nextbp.second);
-                bpexplored++;
+                bpExplored++;
             }
-            lbit = absptlbs.begin();
-            ubit = absptubs.begin();
+            lbit = abspt_lbs.begin();
+            ubit = abspt_ubs.begin();
             iter++;
             //cout << "current lower bound=" << (*lbit)->lb << endl;
             //cout << "current upper bound=" << (*ubit)->ub << endl;
@@ -690,24 +714,26 @@ public:
         Output output;
         output.md = 1;
         output.ddd = 1;
-        output.bpexplored = bpexplored;
+        output.bpExplored = bpExplored;
         output.runtime = duration.count();
         output.iter = iter;
         printOptPath(*lbit, output);
         //printOptMD(*lbit);
-        output.subpathtotal = 1;
-        output.optval = (*lbit)->lb;
+        output.subPathTotal = 1;
+        output.optVal = (*lbit)->lb;
         return output;
     }
 
     //Minimum Travel Time Structures
     struct Mangrove;
+
     struct TimedNode {
         double time = 0;
         int nodeID = -1;
         int bpnode = -1;
         int bptime = -1;
         bool forward = 0;
+
         TimedNode(int n, double t, int i, int k, bool forward) {
             nodeID = n;
             time = t;
@@ -716,228 +742,232 @@ public:
             this->forward = forward;
         }
     };
-    struct Timednode_compare {
-        bool operator() (const TimedNode& lhs, const TimedNode& rhs) const {
+
+    struct TimedNode_compare {
+        bool operator()(const TimedNode &lhs, const TimedNode &rhs) const {
             return lhs.time < rhs.time;
         }
     };
-    const TimedNode* origin = nullptr;
-    const TimedNode* destination = nullptr;
-    typedef set<TimedNode, Timednode_compare> set_timednode;
-    vector<vector<set_timednode>> ftimednodes; //takes ownership of forward nodes, used to add waiting arcs, indexed by [node][bpnode];
-    vector<vector<set_timednode>> btimednodes; //takes ownership of backward nodes, used to add waiting arcs, indexed by [node][bpnode];
+
+    const TimedNode *origin = nullptr;
+    const TimedNode *destination = nullptr;
+    typedef set<TimedNode, TimedNode_compare> set_timedNode;
+    vector<vector<set_timedNode>> fTimedNodes; //takes ownership of forward nodes, used to add waiting arcs, indexed by [node][bpNode];
+    vector<vector<set_timedNode>> bTimedNodes; //takes ownership of backward nodes, used to add waiting arcs, indexed by [node][bpNode];
     struct Mangrove {
-        mutable vector<const TimedNode*> fnodes;
-        mutable vector<const TimedNode*> bnodes;
-        mutable vector<double> ftimes;
-        mutable vector<double> btimes;
-        mutable int bpnode = -1;
-        int bptime = -1;
+        mutable vector<const TimedNode *> f_nodes;
+        mutable vector<const TimedNode *> b_nodes;
+        mutable vector<double> f_times;
+        mutable vector<double> b_times;
+        mutable int bpNode = -1;
+        int bpTime = -1;
         mutable bool resolved = 0;
-        Mangrove(int i, int t, int n) :fnodes(n), bnodes(n), ftimes(n), btimes(n) {
-            bpnode = i;
-            bptime = t;
+
+        Mangrove(int i, int t, int n) : f_nodes(n), b_nodes(n), f_times(n), b_times(n) {
+            bpNode = i;
+            bpTime = t;
         }
     };
+
     struct Mangrove_compare {
-        bool operator() (const Mangrove& lhs, const Mangrove& rhs) const {
-            return lhs.bptime < rhs.bptime;
+        bool operator()(const Mangrove &lhs, const Mangrove &rhs) const {
+            return lhs.bpTime < rhs.bpTime;
         }
     };
-    vector<set<Mangrove, Mangrove_compare>> mangroves; //takes ownership of mangroves, indexed by [bpnode];
-    vector<map<int, const Mangrove*>> mangroveMap; //finds mangrove, indexed by [bpnode][bptime];
-    typedef pair<const TimedNode*, const TimedNode*> TimedArcptr;
-    map<TimedArcptr, double> ttMapLB;
-    map<TimedArcptr, double> ttMapUB;
-    map<const TimedNode*, vector<const TimedNode*>> outMapLB; //internal arcs for LB
-    map<const TimedNode*, vector<const TimedNode*>> outMapUB; //internal arcs for UB
-    typedef pair<const TimedNode*, double> TnTT;
+
+    vector<set<Mangrove, Mangrove_compare>> mangroves; //takes ownership of mangroves, indexed by [bpNode];
+    vector<map<int, const Mangrove *>> mangroveMap; //finds mangrove, indexed by [bpNode][bpTime];
+    typedef pair<const TimedNode *, const TimedNode *> TimedArc_ptr;
+    map<TimedArc_ptr, double> ttMapLB;
+    map<TimedArc_ptr, double> ttMapUB;
+    map<const TimedNode *, vector<const TimedNode *>> outMapLB; //internal arcs for LB
+    map<const TimedNode *, vector<const TimedNode *>> outMapUB; //internal arcs for UB
+    typedef pair<const TimedNode *, double> TnTT;
+
     struct TnTT_compare {
-        bool operator() (const TnTT& lhs, const TnTT& rhs) const {
+        bool operator()(const TnTT &lhs, const TnTT &rhs) const {
             return lhs.second > rhs.second;
         }
     };
-    typedef vector<const TimedNode*> type_path;
+
+    typedef vector<const TimedNode *> type_path;
 
     //Minimum Travel Time Functions
-    const Mangrove* addMangrove(const int bpnode, const int bptime) {
-        //cout << "Adding Mangrove:(" << bpnode << ',' << bptime << ')' << endl;
-        Mangrove newmangrove(bpnode, bptime, G.n);
-        auto nextit = mangroves[bpnode].upper_bound(newmangrove);
-        const Mangrove* nextmanptr = (nextit == mangroves[bpnode].end() ? nullptr: &(*nextit));
-        const Mangrove* prevmanptr = (nextit == mangroves[bpnode].begin() ? nullptr : &(*prev(nextit, 1)));
+    const Mangrove *addMangrove(const int bpNode, const int bpTime) {
+        //cout << "Adding Mangrove:(" << bpNode << ',' << bpTime << ')' << endl;
+        Mangrove newmangrove(bpNode, bpTime, G.n);
+        auto next_it = mangroves[bpNode].upper_bound(newmangrove);
+        const Mangrove *next_man_ptr = (next_it == mangroves[bpNode].end() ? nullptr : &(*next_it));
+        const Mangrove *prev_man_ptr = (next_it == mangroves[bpNode].begin() ? nullptr : &(*prev(next_it, 1)));
         ////Forward
-        vector<type_arc> farcs = {};
-        newmangrove.ftimes = G.FSPT(bpnode, bptime, farcs);
-        //Add nodes to mangrove and ftimednodes
+        vector<type_arc> f_arcs = {};
+        newmangrove.f_times = G.FSPT(bpNode, bpTime, f_arcs);
+        //Add nodes to mangrove and fTimedNodes
         for (int i = 0; i < G.n; i++) {
-            if (newmangrove.ftimes[i] <= G.endT) {
-                TimedNode ftimednode(i, newmangrove.ftimes[i], bpnode, bptime, 1);
-                auto itbool = ftimednodes[i][bpnode].insert(ftimednode);
-                auto it = itbool.first;
-                auto currtimednode = &(*it);
-                newmangrove.fnodes[i] = currtimednode;
-            }
-            else {
-                newmangrove.fnodes[i] = nullptr;
+            if (newmangrove.f_times[i] <= G.endT) {
+                TimedNode f_timedNode(i, newmangrove.f_times[i], bpNode, bpTime, 1);
+                auto it_bool = fTimedNodes[i][bpNode].insert(f_timedNode);
+                auto it = it_bool.first;
+                auto currTimedNode = &(*it);
+                newmangrove.f_nodes[i] = currTimedNode;
+            } else {
+                newmangrove.f_nodes[i] = nullptr;
             }
         }
         ////Backward
-        vector<type_arc> barcs = {};
-        newmangrove.btimes = G.BSPT(bpnode, bptime, barcs);
-        //Add nodes to mangrove and btimednodes
+        vector<type_arc> b_arcs = {};
+        newmangrove.b_times = G.BSPT(bpNode, bpTime, b_arcs);
+        //Add nodes to mangrove and bTimedNodes
         for (int i = 0; i < G.n; i++) {
-            if (newmangrove.btimes[i] >= G.startT) {
-                TimedNode btimednode(i, newmangrove.btimes[i], bpnode, bptime, 0);
-                auto itbool = btimednodes[i][bpnode].insert(btimednode);
-                auto it = itbool.first;
-                auto currtimednode = &(*it);
-                newmangrove.bnodes[i] = currtimednode;
-            }
-            else {
-                newmangrove.bnodes[i] = nullptr;
+            if (newmangrove.b_times[i] >= G.startT) {
+                TimedNode b_timedNode(i, newmangrove.b_times[i], bpNode, bpTime, 0);
+                auto it_bool = bTimedNodes[i][bpNode].insert(b_timedNode);
+                auto it = it_bool.first;
+                auto currTimedNode = &(*it);
+                newmangrove.b_nodes[i] = currTimedNode;
+            } else {
+                newmangrove.b_nodes[i] = nullptr;
             }
         }
 
         //Split into two cases depending on whether added mangrove is resolved(no next mangrove or next mangrove is one unit away)
         //Add entries for outMapLB, outMapUB, ttMapLB, ttMapUB
-        if (nextmanptr==nullptr || nextmanptr->bptime == bptime + 1) {
+        if (next_man_ptr == nullptr || next_man_ptr->bpTime == bpTime + 1) {
             //Do everything resolved
             newmangrove.resolved = 1;
             //Add arcs in FSPT to outMapLB and outMapUB with travel times in ttMapLB and ttMapUB
-            for (type_arc arc : farcs) {
+            for (type_arc arc: f_arcs) {
                 int i = arc.first, j = arc.second;
-                if (newmangrove.ftimes[i] <= G.endT && newmangrove.ftimes[j] <= G.endT) {
-                    const TimedNode* timednodei = newmangrove.fnodes[i];
-                    const TimedNode* timednodej = newmangrove.fnodes[j];
-                    outMapLB[timednodei].push_back(timednodej);
-                    outMapUB[timednodei].push_back(timednodej);
-                    ttMapUB[{timednodei, timednodej}] = G.TT(i, j, newmangrove.ftimes[i]);
-                    ttMapLB[{timednodei, timednodej}] = ttMapUB[{timednodei, timednodej}];
+                if (newmangrove.f_times[i] <= G.endT && newmangrove.f_times[j] <= G.endT) {
+                    const TimedNode *timedNode_i = newmangrove.f_nodes[i];
+                    const TimedNode *timedNode_j = newmangrove.f_nodes[j];
+                    outMapLB[timedNode_i].push_back(timedNode_j);
+                    outMapUB[timedNode_i].push_back(timedNode_j);
+                    ttMapUB[{timedNode_i, timedNode_j}] = G.TT(i, j, newmangrove.f_times[i]);
+                    ttMapLB[{timedNode_i, timedNode_j}] = ttMapUB[{timedNode_i, timedNode_j}];
                 }
             }
             //Add arcs in BSPT to outMapLB and outMapUB with travel times in ttMapLB and ttMapUB
-            for (type_arc arc : barcs) {
+            for (type_arc arc: b_arcs) {
                 int i = arc.first, j = arc.second;
-                if (newmangrove.btimes[i] >= G.startT && newmangrove.btimes[j] >= G.startT) {
-                    const TimedNode* timednodei = newmangrove.bnodes[i];
-                    const TimedNode* timednodej = newmangrove.bnodes[j];
-                    outMapLB[timednodei].push_back(timednodej);
-                    outMapUB[timednodei].push_back(timednodej);
-                    ttMapUB[{timednodei, timednodej}] = G.TT(i, j, newmangrove.btimes[i]);
-                    ttMapLB[{timednodei, timednodej}] = ttMapUB[{timednodei, timednodej}];
+                if (newmangrove.b_times[i] >= G.startT && newmangrove.b_times[j] >= G.startT) {
+                    const TimedNode *timedNode_i = newmangrove.b_nodes[i];
+                    const TimedNode *timedNode_j = newmangrove.b_nodes[j];
+                    outMapLB[timedNode_i].push_back(timedNode_j);
+                    outMapUB[timedNode_i].push_back(timedNode_j);
+                    ttMapUB[{timedNode_i, timedNode_j}] = G.TT(i, j, newmangrove.b_times[i]);
+                    ttMapLB[{timedNode_i, timedNode_j}] = ttMapUB[{timedNode_i, timedNode_j}];
                 }
             }
-        }
-        else {
+        } else {
             //Do everything normally
             //Add arcs in FSPT to outMapLB and outMapUB
             for (int i = 0; i < G.n; i++) {
-                const TimedNode* ftimednode = newmangrove.fnodes[i];
-                if (ftimednode == nullptr) continue;
-                for (int j : G.outMap[i]) {
-                    if (newmangrove.ftimes[j] <= G.endT) {
-                        const TimedNode* timednodei = newmangrove.fnodes[i];
-                        const TimedNode* timednodej = newmangrove.fnodes[j];
-                        outMapLB[timednodei].push_back(timednodej);
-                        ttMapLB[{timednodei, timednodej}] = G.minTT(i, j, newmangrove.ftimes[i], nextmanptr->ftimes[i]);
+                const TimedNode *f_timedNode = newmangrove.f_nodes[i];
+                if (f_timedNode == nullptr) continue;
+                for (int j: G.outMap[i]) {
+                    if (newmangrove.f_times[j] <= G.endT) {
+                        const TimedNode *timedNode_i = newmangrove.f_nodes[i];
+                        const TimedNode *timedNode_j = newmangrove.f_nodes[j];
+                        outMapLB[timedNode_i].push_back(timedNode_j);
+                        ttMapLB[{timedNode_i, timedNode_j}] = G.minTT(i, j, newmangrove.f_times[i], next_man_ptr->f_times[i]);
                     }
                 }
             }
-            for (type_arc arc : farcs) {
+            for (type_arc arc: f_arcs) {
                 int i = arc.first, j = arc.second;
-                if (newmangrove.ftimes[i] <= G.endT && newmangrove.ftimes[j] <= G.endT) {
-                    const TimedNode* timednodei = newmangrove.fnodes[i];
-                    const TimedNode* timednodej = newmangrove.fnodes[j];
-                    outMapUB[timednodei].push_back(timednodej);
-                    ttMapUB[{timednodei, timednodej}] = G.TT(i, j, newmangrove.ftimes[i]);
+                if (newmangrove.f_times[i] <= G.endT && newmangrove.f_times[j] <= G.endT) {
+                    const TimedNode *timedNode_i = newmangrove.f_nodes[i];
+                    const TimedNode *timedNode_j = newmangrove.f_nodes[j];
+                    outMapUB[timedNode_i].push_back(timedNode_j);
+                    ttMapUB[{timedNode_i, timedNode_j}] = G.TT(i, j, newmangrove.f_times[i]);
                 }
             }
             //Add arcs in BSPT to outMapLB and outMapUB
             for (int i = 0; i < G.n; i++) {
-                const TimedNode* btimednode = newmangrove.bnodes[i];
-                if (btimednode == nullptr) continue;
-                for (int j : G.outMap[i]) {
-                    if (newmangrove.btimes[j] >= G.startT) {
-                        const TimedNode* timednodei = newmangrove.bnodes[i];
-                        const TimedNode* timednodej = newmangrove.bnodes[j];
-                        outMapLB[timednodei].push_back(timednodej);
-                        ttMapLB[{timednodei, timednodej}] = G.minTT(i, j, newmangrove.btimes[i], nextmanptr->btimes[i]);
+                const TimedNode *b_timedNode = newmangrove.b_nodes[i];
+                if (b_timedNode == nullptr) continue;
+                for (int j: G.outMap[i]) {
+                    if (newmangrove.b_times[j] >= G.startT) {
+                        const TimedNode *timedNode_i = newmangrove.b_nodes[i];
+                        const TimedNode *timedNode_j = newmangrove.b_nodes[j];
+                        outMapLB[timedNode_i].push_back(timedNode_j);
+                        ttMapLB[{timedNode_i, timedNode_j}] = G.minTT(i, j, newmangrove.b_times[i], next_man_ptr->b_times[i]);
                     }
                 }
             }
-            for (type_arc arc : barcs) {
+            for (type_arc arc: b_arcs) {
                 int i = arc.first, j = arc.second;
-                if (newmangrove.btimes[i] >= G.startT && newmangrove.btimes[j] >= G.startT) {
-                    const TimedNode* timednodei = newmangrove.bnodes[i];
-                    const TimedNode* timednodej = newmangrove.bnodes[j];
-                    outMapUB[timednodei].push_back(timednodej);
-                    ttMapUB[{timednodei, timednodej}] = G.TT(i, j, newmangrove.btimes[i]);
+                if (newmangrove.b_times[i] >= G.startT && newmangrove.b_times[j] >= G.startT) {
+                    const TimedNode *timedNode_i = newmangrove.b_nodes[i];
+                    const TimedNode *timedNode_j = newmangrove.b_nodes[j];
+                    outMapUB[timedNode_i].push_back(timedNode_j);
+                    ttMapUB[{timedNode_i, timedNode_j}] = G.TT(i, j, newmangrove.b_times[i]);
                 }
             }
         }
         //Update costs for prev mangrove ttMapLB and ttMapUB depending on whether prev mangrove needs to be resolved or not
-        if (prevmanptr!=nullptr) {
-            if (prevmanptr->bptime == bptime - 1) {
+        if (prev_man_ptr != nullptr) {
+            if (prev_man_ptr->bpTime == bpTime - 1) {
                 //Resolve
-                prevmanptr->resolved = 1;
-                for (const TimedNode* ftimednode : prevmanptr->fnodes) {
-                    if (ftimednode == nullptr) continue;
-                    outMapLB[ftimednode] = outMapUB[ftimednode];
-                    for (const TimedNode* nextftimednode : outMapUB[ftimednode]) {
-                        TimedArcptr timedarcptr = { ftimednode,nextftimednode };
-                        ttMapLB[timedarcptr] = ttMapUB[timedarcptr];
+                prev_man_ptr->resolved = 1;
+                for (const TimedNode *f_timedNode: prev_man_ptr->f_nodes) {
+                    if (f_timedNode == nullptr) continue;
+                    outMapLB[f_timedNode] = outMapUB[f_timedNode];
+                    for (const TimedNode *next_f_timedNode: outMapUB[f_timedNode]) {
+                        TimedArc_ptr timedArc_ptr = {f_timedNode, next_f_timedNode};
+                        ttMapLB[timedArc_ptr] = ttMapUB[timedArc_ptr];
                     }
                 }
-                for (const TimedNode* btimednode : prevmanptr->bnodes) {
-                    if (btimednode == nullptr) continue;
-                    outMapLB[btimednode] = outMapUB[btimednode];
-                    for (const TimedNode* nextbtimednode : outMapUB[btimednode]) {
-                        TimedArcptr timedarcptr = { btimednode,nextbtimednode };
-                        ttMapLB[timedarcptr] = ttMapUB[timedarcptr];
+                for (const TimedNode *b_timedNode: prev_man_ptr->b_nodes) {
+                    if (b_timedNode == nullptr) continue;
+                    outMapLB[b_timedNode] = outMapUB[b_timedNode];
+                    for (const TimedNode *next_b_timedNode: outMapUB[b_timedNode]) {
+                        TimedArc_ptr timedArc_ptr = {b_timedNode, next_b_timedNode};
+                        ttMapLB[timedArc_ptr] = ttMapUB[timedArc_ptr];
                     }
                 }
-            }
-            else {
+            } else {
                 //Update ttMapLB
-                for (const TimedNode* ftimednode : prevmanptr->fnodes) {
-                    if (ftimednode == nullptr) continue;
-                    int i = ftimednode->nodeID;
-                    double leftt = prevmanptr->ftimes[i];
-                    for (const TimedNode* nextftimednode : outMapLB[ftimednode]) {
-                        int j = nextftimednode->nodeID;
-                        double rightt = newmangrove.ftimes[j];
-                        TimedArcptr timedarcptr = { ftimednode,nextftimednode };
-                        ttMapLB[timedarcptr] = G.minTT(i, j, leftt, rightt);
+                for (const TimedNode *f_timedNode: prev_man_ptr->f_nodes) {
+                    if (f_timedNode == nullptr) continue;
+                    int i = f_timedNode->nodeID;
+                    double leftT = prev_man_ptr->f_times[i];
+                    for (const TimedNode *next_f_timedNode: outMapLB[f_timedNode]) {
+                        int j = next_f_timedNode->nodeID;
+                        double rightT = newmangrove.f_times[j];
+                        TimedArc_ptr timedArc_ptr = {f_timedNode, next_f_timedNode};
+                        ttMapLB[timedArc_ptr] = G.minTT(i, j, leftT, rightT);
                     }
                 }
-                for (const TimedNode* btimednode : prevmanptr->bnodes) {
-                    if (btimednode == nullptr) continue;
-                    int i = btimednode->nodeID;
-                    double leftt = prevmanptr->btimes[i];
-                    for (const TimedNode* nextbtimednode : outMapLB[btimednode]) {
-                        int j = nextbtimednode->nodeID;
-                        double rightt = newmangrove.btimes[j];
-                        TimedArcptr timedarcptr = { btimednode,nextbtimednode };
-                        ttMapLB[timedarcptr] = G.minTT(i, j, leftt, rightt);
+                for (const TimedNode *b_timedNode: prev_man_ptr->b_nodes) {
+                    if (b_timedNode == nullptr) continue;
+                    int i = b_timedNode->nodeID;
+                    double leftT = prev_man_ptr->b_times[i];
+                    for (const TimedNode *next_b_timedNode: outMapLB[b_timedNode]) {
+                        int j = next_b_timedNode->nodeID;
+                        double rightT = newmangrove.b_times[j];
+                        TimedArc_ptr timedArc_ptr = {b_timedNode, next_b_timedNode};
+                        ttMapLB[timedArc_ptr] = G.minTT(i, j, leftT, rightT);
                     }
                 }
             }
         }
-        auto itbool = mangroves[bpnode].insert(newmangrove);
-        const Mangrove* manptr = &(*itbool.first);
-        mangroveMap[bpnode][bptime] = manptr;
-        return manptr;
+        auto it_bool = mangroves[bpNode].insert(newmangrove);
+        const Mangrove *man_ptr = &(*it_bool.first);
+        mangroveMap[bpNode][bpTime] = man_ptr;
+        return man_ptr;
     }
-    pair<type_path,double> findLB() {
-        map<const TimedNode*,double> dp;
-        map<const TimedNode*, const TimedNode*> pred;
+
+    pair<type_path, double> findLB() {
+        map<const TimedNode *, double> dp;
+        map<const TimedNode *, const TimedNode *> pred;
         priority_queue<TnTT, vector<TnTT>, TnTT_compare> pq;
-        pq.push({ origin,0 });
+        pq.push({origin, 0});
         dp[origin] = 0;
         while (!pq.empty()) {
-            const TimedNode* ptr = pq.top().first;
-            //cout << "Popping: (" << ptr->nodeID << ',' << ptr->nodeID << ") from: (" << ptr->bpnode << ',' << ptr->bptime << ")" << endl;
+            const TimedNode *ptr = pq.top().first;
+            //cout << "Popping: (" << ptr->nodeID << ',' << ptr->nodeID << ") from: (" << ptr->bpNode << ',' << ptr->bpTime << ")" << endl;
             //cout << "DP value: " << pq.top().second << endl;
             if (ptr == destination) break;
             //Care double comparison
@@ -946,90 +976,89 @@ public:
                 continue;
             }
             pq.pop();
-            for (const TimedNode* nextptr : outMapLB[ptr]) {
-                double weight = ttMapLB[{ptr, nextptr}];
-                auto it = dp.find(nextptr);
-                if (it == dp.end()) dp[nextptr] = INT_MAX;
-                if (dp[nextptr] > dp[ptr] + weight) {
-                    dp[nextptr] = dp[ptr] + weight;
-                    pq.push({ nextptr,dp[nextptr] });
-                    //cout << "Pushing: (" << nextptr->nodeID << ',' << nextptr->nodeID << ") from: (" << nextptr->bpnode << ',' << nextptr->bptime << ")" << endl;
-                    //cout << "DP value: " << dp[nextptr] << endl;
-                    pred[nextptr] = ptr;
+            for (const TimedNode *next_ptr: outMapLB[ptr]) {
+                double weight = ttMapLB[{ptr, next_ptr}];
+                auto it = dp.find(next_ptr);
+                if (it == dp.end()) dp[next_ptr] = INT_MAX;
+                if (dp[next_ptr] > dp[ptr] + weight) {
+                    dp[next_ptr] = dp[ptr] + weight;
+                    pq.push({next_ptr, dp[next_ptr]});
+                    //cout << "Pushing: (" << next_ptr->nodeID << ',' << next_ptr->nodeID << ") from: (" << next_ptr->bpNode << ',' << next_ptr->bpTime << ")" << endl;
+                    //cout << "DP value: " << dp[next_ptr] << endl;
+                    pred[next_ptr] = ptr;
                 }
             }
             int node = ptr->nodeID;
             int i = ptr->bpnode;
             if (ptr->forward) {
                 for (int j = 0; j < G.n; j++) {
-                    if (btimednodes[node][j].empty()) continue;
-                    auto nextit = btimednodes[node][j].upper_bound(*ptr);
-                    const TimedNode* nextptr;
+                    if (bTimedNodes[node][j].empty()) continue;
+                    auto next_it = bTimedNodes[node][j].upper_bound(*ptr);
+                    const TimedNode *next_ptr;
                     if (j == i) {
                         //Waiting arc to next copy
-                        if (nextit == btimednodes[node][j].end()) continue;
-                        else nextptr = &(*nextit);
-                    }
-                    else {
+                        if (next_it == bTimedNodes[node][j].end()) continue;
+                        else next_ptr = &(*next_it);
+                    } else {
                         //Waiting arc from i-FSPT to j-BSPT
-                        if (nextit == btimednodes[node][j].begin()) nextptr = &(*nextit);
-                        else if (nextit == btimednodes[node][j].end()) continue;
+                        if (next_it == bTimedNodes[node][j].begin()) next_ptr = &(*next_it);
+                        else if (next_it == bTimedNodes[node][j].end()) continue;
                         else {
-                            auto previt = prev(nextit, 1);
-                            if (mangroveMap[j][previt->bptime]->resolved) nextptr = &(*nextit);
-                            else nextptr = &(*previt);
+                            auto prev_it = prev(next_it, 1);
+                            if (mangroveMap[j][prev_it->bptime]->resolved) next_ptr = &(*next_it);
+                            else next_ptr = &(*prev_it);
                         }
                     }
-                    if (nextptr == nullptr) continue;
-                    auto it = dp.find(nextptr);
-                    if (it == dp.end()) dp[nextptr] = INT_MAX;
-                    if (dp[nextptr] > dp[ptr]) {
-                        dp[nextptr] = dp[ptr];
-                        pq.push({ nextptr,dp[nextptr] });
-                        //cout << "Pushing: (" << nextptr->nodeID << ',' << nextptr->nodeID << ") from: (" << nextptr->bpnode << ',' << nextptr->bptime << ")" << endl;
-                        //cout << "DP value: " << dp[nextptr] << endl;
-                        pred[nextptr] = ptr;
+                    if (next_ptr == nullptr) continue;
+                    auto it = dp.find(next_ptr);
+                    if (it == dp.end()) dp[next_ptr] = INT_MAX;
+                    if (dp[next_ptr] > dp[ptr]) {
+                        dp[next_ptr] = dp[ptr];
+                        pq.push({next_ptr, dp[next_ptr]});
+                        //cout << "Pushing: (" << next_ptr->nodeID << ',' << next_ptr->nodeID << ") from: (" << next_ptr->bpNode << ',' << next_ptr->bpTime << ")" << endl;
+                        //cout << "DP value: " << dp[next_ptr] << endl;
+                        pred[next_ptr] = ptr;
                     }
                 }
-            }
-            else {
+            } else {
                 if (i == node) {
                     //Waiting arc from BSPT to FSPT through node
-                    auto nextit = ftimednodes[node][i].lower_bound(*ptr);
-                    const TimedNode* nextptr;
-                    assert(nextit != ftimednodes[node][i].end());
-                    nextptr = &(*nextit);
-                    auto it = dp.find(nextptr);
-                    if (it == dp.end()) dp[nextptr] = INT_MAX;
-                    if (dp[nextptr] > dp[ptr]) {
-                        dp[nextptr] = dp[ptr];
-                        pq.push({ nextptr,dp[nextptr] });
-                        //cout << "Pushing: (" << nextptr->nodeID << ',' << nextptr->nodeID << ") from: (" << nextptr->bpnode << ',' << nextptr->bptime << ")" << endl;
-                        //cout << "DP value: " << dp[nextptr] << endl;
-                        pred[nextptr] = ptr;
+                    auto next_it = fTimedNodes[node][i].lower_bound(*ptr);
+                    const TimedNode *next_ptr;
+                    assert(next_it != fTimedNodes[node][i].end());
+                    next_ptr = &(*next_it);
+                    auto it = dp.find(next_ptr);
+                    if (it == dp.end()) dp[next_ptr] = INT_MAX;
+                    if (dp[next_ptr] > dp[ptr]) {
+                        dp[next_ptr] = dp[ptr];
+                        pq.push({next_ptr, dp[next_ptr]});
+                        //cout << "Pushing: (" << next_ptr->nodeID << ',' << next_ptr->nodeID << ") from: (" << next_ptr->bpNode << ',' << next_ptr->bpTime << ")" << endl;
+                        //cout << "DP value: " << dp[next_ptr] << endl;
+                        pred[next_ptr] = ptr;
                     }
                 }
             }
         }
         type_path path;
-        const TimedNode* curr = destination;
+        const TimedNode *curr = destination;
         while (curr != origin) {
             path.push_back(curr);
             curr = pred[curr];
         }
         path.push_back(curr);
         reverse(path.begin(), path.end());
-        return { path,dp[destination] - dp[origin] };
+        return {path, dp[destination] - dp[origin]};
     }
+
     pair<type_path, double> findUB() {
-        map<const TimedNode*, double> dp;
-        map<const TimedNode*, const TimedNode*> pred;
+        map<const TimedNode *, double> dp;
+        map<const TimedNode *, const TimedNode *> pred;
         priority_queue<TnTT, vector<TnTT>, TnTT_compare> pq;
-        pq.push({ origin,0 });
+        pq.push({origin, 0});
         dp[origin] = 0;
         while (!pq.empty()) {
-            const TimedNode* ptr = pq.top().first;
-            //cout << "Popping: (" << ptr->nodeID << ',' << ptr->nodeID << ") from: (" << ptr->bpnode << ',' << ptr->bptime << ")" << endl;
+            const TimedNode *ptr = pq.top().first;
+            //cout << "Popping: (" << ptr->nodeID << ',' << ptr->nodeID << ") from: (" << ptr->bpNode << ',' << ptr->bpTime << ")" << endl;
             //cout << "DP value: " << pq.top().second << endl;
             if (ptr == destination) break;
             //Care double comparison
@@ -1038,250 +1067,247 @@ public:
                 continue;
             }
             pq.pop();
-            for (const TimedNode* nextptr : outMapUB[ptr]) {
-                double weight = ttMapUB[{ptr, nextptr}];
-                auto it = dp.find(nextptr);
-                if (it == dp.end()) dp[nextptr] = INT_MAX;
-                if (dp[nextptr] > dp[ptr] + weight) {
-                    dp[nextptr] = dp[ptr] + weight;
-                    pq.push({ nextptr,dp[nextptr] });
-                    //cout << "Pushing: (" << nextptr->nodeID << ',' << nextptr->nodeID << ") from: (" << nextptr->bpnode << ',' << nextptr->bptime << ")" << endl;
-                    //cout << "DP value: " << dp[nextptr] << endl;
-                    pred[nextptr] = ptr;
+            for (const TimedNode *next_ptr: outMapUB[ptr]) {
+                double weight = ttMapUB[{ptr, next_ptr}];
+                auto it = dp.find(next_ptr);
+                if (it == dp.end()) dp[next_ptr] = INT_MAX;
+                if (dp[next_ptr] > dp[ptr] + weight) {
+                    dp[next_ptr] = dp[ptr] + weight;
+                    pq.push({next_ptr, dp[next_ptr]});
+                    //cout << "Pushing: (" << next_ptr->nodeID << ',' << next_ptr->nodeID << ") from: (" << next_ptr->bpNode << ',' << next_ptr->bpTime << ")" << endl;
+                    //cout << "DP value: " << dp[next_ptr] << endl;
+                    pred[next_ptr] = ptr;
                 }
             }
             int node = ptr->nodeID;
             int i = ptr->bpnode;
             if (ptr->forward) {
                 for (int j = 0; j < G.n; j++) {
-                    if (btimednodes[node][j].empty()) continue;
-                    auto nextit = btimednodes[node][j].upper_bound(*ptr);
-                    const TimedNode* nextptr;
+                    if (bTimedNodes[node][j].empty()) continue;
+                    auto next_it = bTimedNodes[node][j].upper_bound(*ptr);
+                    const TimedNode *next_ptr;
                     if (j == i) {
                         //Waiting arc to next copy
-                        if (nextit == btimednodes[node][j].end()) continue;
-                        else nextptr = &(*nextit);
-                    }
-                    else {
+                        if (next_it == bTimedNodes[node][j].end()) continue;
+                        else next_ptr = &(*next_it);
+                    } else {
                         //Waiting arc from i-FSPT to j-BSPT
-                        if (nextit == btimednodes[node][j].begin()) nextptr = &(*nextit);
-                        else if (nextit == btimednodes[node][j].end()) continue;
-                        nextptr = &(*nextit);
+                        if (next_it == bTimedNodes[node][j].begin()) next_ptr = &(*next_it);
+                        else if (next_it == bTimedNodes[node][j].end()) continue;
+                        next_ptr = &(*next_it);
                     }
-                    if (nextptr == nullptr) continue;
-                    auto it = dp.find(nextptr);
-                    if (it == dp.end()) dp[nextptr] = INT_MAX;
-                    if (dp[nextptr] > dp[ptr]) {
-                        dp[nextptr] = dp[ptr];
-                        pq.push({ nextptr,dp[nextptr] });
-                        //cout << "Pushing: (" << nextptr->nodeID << ',' << nextptr->nodeID << ") from: (" << nextptr->bpnode << ',' << nextptr->bptime << ")" << endl;
-                        //cout << "DP value: " << dp[nextptr] << endl;
-                        pred[nextptr] = ptr;
+                    if (next_ptr == nullptr) continue;
+                    auto it = dp.find(next_ptr);
+                    if (it == dp.end()) dp[next_ptr] = INT_MAX;
+                    if (dp[next_ptr] > dp[ptr]) {
+                        dp[next_ptr] = dp[ptr];
+                        pq.push({next_ptr, dp[next_ptr]});
+                        //cout << "Pushing: (" << next_ptr->nodeID << ',' << next_ptr->nodeID << ") from: (" << next_ptr->bpNode << ',' << next_ptr->bpTime << ")" << endl;
+                        //cout << "DP value: " << dp[next_ptr] << endl;
+                        pred[next_ptr] = ptr;
                     }
                 }
-            }
-            else {
+            } else {
                 if (i == node) {
                     //Waiting arc from BSPT to FSPT through node
-                    auto nextit = ftimednodes[node][i].lower_bound(*ptr);
-                    const TimedNode* nextptr;
-                    assert(nextit != ftimednodes[node][i].end());
-                    nextptr = &(*nextit);
-                    auto it = dp.find(nextptr);
-                    if (it == dp.end()) dp[nextptr] = INT_MAX;
-                    if (dp[nextptr] > dp[ptr]) {
-                        dp[nextptr] = dp[ptr];
-                        pq.push({ nextptr,dp[nextptr] });
-                        //cout << "Pushing: (" << nextptr->nodeID << ',' << nextptr->nodeID << ") from: (" << nextptr->bpnode << ',' << nextptr->bptime << ")" << endl;
-                        //cout << "DP value: " << dp[nextptr] << endl;
-                        pred[nextptr] = ptr;
+                    auto next_it = fTimedNodes[node][i].lower_bound(*ptr);
+                    const TimedNode *next_ptr;
+                    assert(next_it != fTimedNodes[node][i].end());
+                    next_ptr = &(*next_it);
+                    auto it = dp.find(next_ptr);
+                    if (it == dp.end()) dp[next_ptr] = INT_MAX;
+                    if (dp[next_ptr] > dp[ptr]) {
+                        dp[next_ptr] = dp[ptr];
+                        pq.push({next_ptr, dp[next_ptr]});
+                        //cout << "Pushing: (" << next_ptr->nodeID << ',' << next_ptr->nodeID << ") from: (" << next_ptr->bpNode << ',' << next_ptr->bpTime << ")" << endl;
+                        //cout << "DP value: " << dp[next_ptr] << endl;
+                        pred[next_ptr] = ptr;
                     }
                 }
             }
         }
         type_path path;
-        const TimedNode* curr = destination;
+        const TimedNode *curr = destination;
         while (curr != origin) {
             path.push_back(curr);
             curr = pred[curr];
         }
         path.push_back(curr);
         reverse(path.begin(), path.end());
-        return { path,dp[destination] - dp[origin] };
+        return {path, dp[destination] - dp[origin]};
     }
-    vector<type_bp> findBP(const Mangrove* curr, int addmult = 4, int option = 0) {
+
+    vector<type_bp> findBP(const Mangrove *curr, int addmult = 4, int option = 0) {
         vector<type_bp> multbps;
-        int bpnode = curr->bpnode;
-        int bptime = -1;
-        auto nextit = mangroves[curr->bpnode].upper_bound(*curr);
-        if (nextit == mangroves[curr->bpnode].end()) return multbps;
+        int bpNode = curr->bpNode;
+        int bpTime = -1;
+        auto next_it = mangroves[curr->bpNode].upper_bound(*curr);
+        if (next_it == mangroves[curr->bpNode].end()) return multbps;
         //Check if any breakpoints in between
-        int leftt = curr->bptime;
-        int rightt = nextit->bptime;
-        leftt++, rightt--;
-        if (leftt <= rightt){
+        int leftT = curr->bpTime;
+        int rightT = next_it->bpTime;
+        leftT++, rightT--;
+        if (leftT <= rightT) {
             if (addmult == 4) {
-                stack<pair<int,int>> st;
-                st.push({ leftt,rightt });
+                stack<pair<int, int>> st;
+                st.push({leftT, rightT});
                 while (!st.empty()) {
                     pair<int, int> interval = st.top();
                     st.pop();
-                    leftt = interval.first;
-                    rightt = interval.second;
-                    if (G.outMap[bpnode].empty()) {
-                        if (option == 0) bptime = G.minindTT(G.inMap[bpnode][0], bpnode, leftt, rightt); //min
-                        else if (option == 1) bptime = (leftt + rightt) / 2; //med
-                        else if (option == 2) bptime = leftt + rand() % (rightt - leftt + 1); //rand
+                    leftT = interval.first;
+                    rightT = interval.second;
+                    if (G.outMap[bpNode].empty()) {
+                        if (option == 0) bpTime = G.min_idx_TT(G.inMap[bpNode][0], bpNode, leftT, rightT); //min
+                        else if (option == 1) bpTime = (leftT + rightT) / 2; //med
+                        else if (option == 2) bpTime = leftT + rand() % (rightT - leftT + 1); //rand
+                    } else {
+                        if (option == 0) bpTime = G.min_idx_TT(bpNode, G.outMap[bpNode][0], leftT, rightT); //min
+                        else if (option == 1) bpTime = (leftT + rightT) / 2; //med
+                        else if (option == 2) bpTime = leftT + rand() % (rightT - leftT + 1); //rand
                     }
-                    else {
-                        if (option == 0) bptime = G.minindTT(bpnode, G.outMap[bpnode][0], leftt, rightt); //min
-                        else if (option == 1) bptime = (leftt + rightt) / 2; //med
-                        else if (option == 2) bptime = leftt + rand() % (rightt - leftt + 1); //rand
+                    if (bpTime - 1 > leftT) {
+                        st.push({leftT, bpTime - 2});
                     }
-                    if (bptime - 1 > leftt) {
-                        st.push({ leftt ,bptime - 2 });
+                    if (bpTime + 1 < rightT) {
+                        st.push({bpTime + 2, rightT});
                     }
-                    if (bptime + 1 < rightt) {
-                        st.push({ bptime + 2,rightt });
-                    }
-                    multbps.push_back({ bpnode,bptime });
-                    if (bptime - 1 >= leftt) multbps.push_back({ bpnode,bptime - 1 });
-                    if (bptime + 1 <= rightt) multbps.push_back({ bpnode,bptime + 1 });
+                    multbps.push_back({bpNode, bpTime});
+                    if (bpTime - 1 >= leftT) multbps.push_back({bpNode, bpTime - 1});
+                    if (bpTime + 1 <= rightT) multbps.push_back({bpNode, bpTime + 1});
                 }
-            }
-            else if (addmult == 5) {
-                for (int i = leftt; i <= rightt; i++) {
-                    multbps.push_back({ bpnode,i });
+            } else if (addmult == 5) {
+                for (int i = leftT; i <= rightT; i++) {
+                    multbps.push_back({bpNode, i});
                 }
-            }
-            else {
-                if (G.outMap[bpnode].empty()) {
-                    if (option == 0) bptime = G.minindTT(G.inMap[bpnode][0], bpnode, leftt, rightt); //min
-                    else if (option == 1) bptime = (leftt + rightt) / 2; //med
-                    else if (option == 2) bptime = leftt + rand() % (rightt - leftt + 1); //rand
+            } else {
+                if (G.outMap[bpNode].empty()) {
+                    if (option == 0) bpTime = G.min_idx_TT(G.inMap[bpNode][0], bpNode, leftT, rightT); //min
+                    else if (option == 1) bpTime = (leftT + rightT) / 2; //med
+                    else if (option == 2) bpTime = leftT + rand() % (rightT - leftT + 1); //rand
+                } else {
+                    if (option == 0) bpTime = G.min_idx_TT(bpNode, G.outMap[bpNode][0], leftT, rightT); //min
+                    else if (option == 1) bpTime = (leftT + rightT) / 2; //med
+                    else if (option == 2) bpTime = leftT + rand() % (rightT - leftT + 1); //rand
                 }
-                else {
-                    if (option == 0) bptime = G.minindTT(bpnode, G.outMap[bpnode][0], leftt, rightt); //min
-                    else if (option == 1) bptime = (leftt + rightt) / 2; //med
-                    else if (option == 2) bptime = leftt + rand() % (rightt - leftt + 1); //rand
-                }
-                multbps.push_back({ bpnode,bptime });
-                if (addmult >= 1 && bptime - 1 >= leftt) multbps.push_back({ bpnode,bptime - 1 });
-                if (addmult >= 2 && bptime + 1 <= rightt) multbps.push_back({ bpnode,bptime + 1 });
-                if (addmult >= 3 && leftt < bptime - 1) multbps.push_back({ bpnode,leftt });
+                multbps.push_back({bpNode, bpTime});
+                if (addmult >= 1 && bpTime - 1 >= leftT) multbps.push_back({bpNode, bpTime - 1});
+                if (addmult >= 2 && bpTime + 1 <= rightT) multbps.push_back({bpNode, bpTime + 1});
+                if (addmult >= 3 && leftT < bpTime - 1) multbps.push_back({bpNode, leftT});
             }
         }
         return multbps;
     }
-    set<type_bp> findBP(type_path& path) {
+
+    set<type_bp> findBP(type_path &path) {
         set<type_bp> bps;
-        for (int i = 1; i < path.size(); i++) { 
-            const TimedNode* timednode = path[i];
+        for (int i = 1; i < path.size(); i++) {
+            const TimedNode *timedNode = path[i];
             if (path[i]->bpnode != path[i - 1]->bpnode) {
-                //cout << "Not Investigating: (" << timednode->bpnode << ',' << timednode->bptime << ')' << endl;
+                //cout << "Not Investigating: (" << timedNode->bpNode << ',' << timedNode->bpTime << ')' << endl;
                 continue;
             }
-            //cout << "Investigating: (" << timednode->bpnode << ',' << timednode->bptime << ')' << endl;
-            vector<type_bp> multbp = findBP(mangroveMap[timednode->bpnode][timednode->bptime]);
-            for (type_bp bp: multbp) {
+            //cout << "Investigating: (" << timedNode->bpNode << ',' << timedNode->bpTime << ')' << endl;
+            vector<type_bp> mult_bp = findBP(mangroveMap[timedNode->bpnode][timedNode->bptime]);
+            for (type_bp bp: mult_bp) {
                 bps.insert(bp);
             }
         }
         return bps;
     }
-    bool isResolved(type_path& path) {
+
+    bool isResolved(type_path &path) {
         bool wait = 1;
         for (int i = 1; i < path.size(); i++) {
             if (path[i]->nodeID == path[i - 1]->nodeID) {
                 wait = 1;
-            }
-            else if (wait) {
+            } else if (wait) {
                 wait = 0;
-                //cout << path[i]->bpnode << path[i]->bptime << endl;
-                if (mangroveMap[path[i]->bpnode][path[i]->bptime]->resolved == false) {
+                //cout << path[i]->bpNode << path[i]->bpTime << endl;
+                if (!mangroveMap[path[i]->bpnode][path[i]->bptime]->resolved) {
                     return false;
                 }
             }
         }
         return true;
     }
+
     Output findMTT() {
-        int bpexplored = 0;
+        int bpExplored = 0;
         int iter = 0;
         auto start = chrono::high_resolution_clock::now();
         auto start2 = chrono::high_resolution_clock::now();
-        const Mangrove* lastmangrove = addMangrove(G.endN, G.endT);
+        const Mangrove *lastMangrove = addMangrove(G.endN, G.endT);
         auto stop2 = chrono::high_resolution_clock::now();
         auto duration2 = chrono::duration_cast<chrono::milliseconds>(stop2 - start2);
-        bpexplored++;
-        destination = lastmangrove->bnodes[G.endN];
+        bpExplored++;
+        destination = lastMangrove->b_nodes[G.endN];
         for (int i = 0; i < G.n; i++) {
             if (i == G.endN) continue;
             start2 = chrono::high_resolution_clock::now();
-            addMangrove(i, floor(lastmangrove->btimes[i]));
+            addMangrove(i, floor(lastMangrove->b_times[i]));
             stop2 = chrono::high_resolution_clock::now();
             duration2 += chrono::duration_cast<chrono::milliseconds>(stop2 - start2);
-            bpexplored++;
+            bpExplored++;
         }
         start2 = chrono::high_resolution_clock::now();
-        const Mangrove* firstmangrove = addMangrove(G.startN, G.startT);
+        const Mangrove *firstMangrove = addMangrove(G.startN, G.startT);
         stop2 = chrono::high_resolution_clock::now();
         duration2 += chrono::duration_cast<chrono::milliseconds>(stop2 - start2);
-        bpexplored++;
-        origin = firstmangrove->fnodes[G.startN];
+        bpExplored++;
+        origin = firstMangrove->f_nodes[G.startN];
         for (int i = 0; i < G.n; i++) {
             if (i == G.startN) continue;
             start2 = chrono::high_resolution_clock::now();
-            addMangrove(i, ceil(firstmangrove->ftimes[i]));
+            addMangrove(i, ceil(firstMangrove->f_times[i]));
             stop2 = chrono::high_resolution_clock::now();
             duration2 += chrono::duration_cast<chrono::milliseconds>(stop2 - start2);
-            bpexplored++;
+            bpExplored++;
         }
         //Add breakpoints associated with minimums or points near minimums
         if (false) {
             for (int i = 0; i < G.n; i++) {
                 int j = G.outMap[i][0];
-                int leftt = ceil(firstmangrove->ftimes[i]) + 1;
-                int rightt = floor(lastmangrove->btimes[i]) - 1;
-                double reftime = G.minttMap[{i, j}][leftt][rightt];
+                int leftT = ceil(firstMangrove->f_times[i]) + 1;
+                int rightT = floor(lastMangrove->b_times[i]) - 1;
+                double reftime = G.minttMap[{i, j}][leftT][rightT];
                 queue<vector<int>> q;
-                q.push({ G.minindttMap[{i, j}][leftt][rightt],leftt,rightt });
+                q.push({G.min_idx_ttMap[{i, j}][leftT][rightT], leftT, rightT});
                 while (!q.empty()) {
                     vector<int> v = q.front();
                     int t = v[0];
-                    leftt = v[1];
-                    rightt = v[2];
+                    leftT = v[1];
+                    rightT = v[2];
                     q.pop();
                     start2 = chrono::high_resolution_clock::now();
                     addMangrove(i, t);
-                    if (t > leftt) {
+                    if (t > leftT) {
                         addMangrove(i, t - 1);
-                        bpexplored++;
+                        bpExplored++;
                     }
-                    if (t - 1 > leftt) {
+                    if (t - 1 > leftT) {
                         addMangrove(i, t - 2);
-                        bpexplored++;
+                        bpExplored++;
                     }
-                    if (t < rightt) {
+                    if (t < rightT) {
                         addMangrove(i, t + 1);
-                        bpexplored++;
+                        bpExplored++;
                     }
-                    if (t + 1 < rightt) {
+                    if (t + 1 < rightT) {
                         addMangrove(i, t + 2);
-                        bpexplored++;
+                        bpExplored++;
                     }
-                    if (t + 2 < rightt) {
+                    if (t + 2 < rightT) {
                         addMangrove(i, t + 3);
-                        bpexplored++;
+                        bpExplored++;
                     }
                     stop2 = chrono::high_resolution_clock::now();
                     duration2 += chrono::duration_cast<chrono::milliseconds>(stop2 - start2);
-                    bpexplored++;
-                    if (leftt < t - 2 && G.minttMap[{i, j}][leftt][t - 3] < 1.03 * reftime) {
-                        q.push({ G.minindttMap[{i, j}][leftt][t - 3],leftt,t - 3 });
+                    bpExplored++;
+                    if (leftT < t - 2 && G.minttMap[{i, j}][leftT][t - 3] < 1.03 * reftime) {
+                        q.push({G.min_idx_ttMap[{i, j}][leftT][t - 3], leftT, t - 3});
                     }
-                    if (rightt > t + 3 && G.minttMap[{i, j}][t + 4][rightt] < 1.03 * reftime) {
-                        q.push({ G.minindttMap[{i, j}][t + 4][rightt],t + 4,rightt });
+                    if (rightT > t + 3 && G.minttMap[{i, j}][t + 4][rightT] < 1.03 * reftime) {
+                        q.push({G.min_idx_ttMap[{i, j}][t + 4][rightT], t + 4, rightT});
                     }
                 }
             }
@@ -1296,14 +1322,14 @@ public:
         //printPathInfo(pathLB, pathUB);
         //printCurrentMangroves();
         while (!isResolved(pathLB.first)) {
-            set<type_bp> nextbps = findBP(pathLB.first);
-            //printBPtoAdd(nextbps);
-            for (type_bp nextbp : nextbps) {
+            set<type_bp> next_bps = findBP(pathLB.first);
+            //printBPtoAdd(next_bps);
+            for (type_bp next_bp: next_bps) {
                 start2 = chrono::high_resolution_clock::now();
-                addMangrove(nextbp.first, nextbp.second);
+                addMangrove(next_bp.first, next_bp.second);
                 stop2 = chrono::high_resolution_clock::now();
                 duration2 += chrono::duration_cast<chrono::milliseconds>(stop2 - start2);
-                bpexplored++;
+                bpExplored++;
             }
             start3 = chrono::high_resolution_clock::now();
             pathLB = findLB();
@@ -1325,151 +1351,147 @@ public:
         Output output;
         output.md = 0;
         output.ddd = 1;
-        output.bpexplored = bpexplored;
+        output.bpExplored = bpExplored;
         output.runtime = duration.count();
         output.spruntime = duration3.count();
         output.addruntime = duration2.count();
         output.iter = iter;
         printLBPath(pathLB.first, output);
-        output.optval = pathLB.second;
+        output.optVal = pathLB.second;
         return output;
     }
 
     //Enumeration Functions
     Output findEnumMD() {
         auto start = chrono::high_resolution_clock::now();
-        const Mangrove* optmangrove = nullptr;
-        double optval;
-        const Mangrove* lastmangrove = addEnumMangrove(G.endN, G.endT);
-        optmangrove = lastmangrove;
-        optval = lastmangrove->ftimes[G.endN] - lastmangrove->btimes[G.startN];
-        const Mangrove* firstmangrove = addEnumMangrove(G.startN, G.startT);
-        double temp = firstmangrove->ftimes[G.endN] - firstmangrove->btimes[G.startN];
-        if (temp < optval) {
-            optmangrove = firstmangrove;
-            optval = temp;
+        const Mangrove *opt_mangrove = nullptr;
+        double optVal;
+        const Mangrove *lastMangrove = addEnumMangrove(G.endN, G.endT);
+        opt_mangrove = lastMangrove;
+        optVal = lastMangrove->f_times[G.endN] - lastMangrove->b_times[G.startN];
+        const Mangrove *firstMangrove = addEnumMangrove(G.startN, G.startT);
+        double temp = firstMangrove->f_times[G.endN] - firstMangrove->b_times[G.startN];
+        if (temp < optVal) {
+            opt_mangrove = firstMangrove;
+            optVal = temp;
         }
         for (int i = 0; i < G.n; i++) {
-            int leftt, rightt;
-            if ((int)lastmangrove->btimes[i] == lastmangrove->btimes[i]) {
-                rightt = lastmangrove->btimes[i] - 1;
+            int leftT, rightT;
+            if ((int) lastMangrove->b_times[i] == lastMangrove->b_times[i]) {
+                rightT = lastMangrove->b_times[i] - 1;
+            } else {
+                rightT = floor(lastMangrove->b_times[i]);
             }
-            else {
-                rightt = floor(lastmangrove->btimes[i]);
+            if ((int) firstMangrove->f_times[i] == firstMangrove->f_times[i]) {
+                leftT = firstMangrove->f_times[i] + 1;
+            } else {
+                leftT = ceil(firstMangrove->f_times[i]);
             }
-            if ((int)firstmangrove->ftimes[i] == firstmangrove->ftimes[i]) {
-                leftt = firstmangrove->ftimes[i] + 1;
-            }
-            else {
-                leftt = ceil(firstmangrove->ftimes[i]);
-            }
-            for (int t = leftt; t <= rightt; t++) {
-                const Mangrove* newmangrove = addEnumMangrove(i, t);
-                double temp = newmangrove->ftimes[G.endN] - newmangrove->btimes[G.startN];
-                if (temp < optval) {
-                    optmangrove = newmangrove;
-                    optval = temp;
+            for (int t = leftT; t <= rightT; t++) {
+                const Mangrove *new_mangrove = addEnumMangrove(i, t);
+                double temp = new_mangrove->f_times[G.endN] - new_mangrove->b_times[G.startN];
+                if (temp < optVal) {
+                    opt_mangrove = new_mangrove;
+                    optVal = temp;
                 }
             }
         }
         auto stop = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
         cout << "Time taken by function: " << duration.count() << " milliseconds" << endl;
-        cout << "Optimal Solution is: " << optval << endl;
+        cout << "Optimal Solution is: " << optVal << endl;
         Output output;
         output.md = 1;
         output.ddd = 0;
-        output.bpexplored = (G.n - 1) * (G.endT - G.startT - 1) + 2;
+        output.bpExplored = (G.n - 1) * (G.endT - G.startT - 1) + 2;
         output.runtime = duration.count();
-        printOptPath(*optmangrove, output);
-        output.subpathtotal = 1;
-        output.optval = optval;
+        printOptPath(*opt_mangrove, output);
+        output.subPathTotal = 1;
+        output.optVal = optVal;
         return output;
     }
-    const Mangrove* addEnumMangrove(const int bpnode, const int bptime) {
-        //cout << "Adding Mangrove:(" << bpnode << ',' << bptime << ')' << endl;
-        Mangrove newmangrove(bpnode, bptime, G.n);
+
+    const Mangrove *addEnumMangrove(const int bpNode, const int bpTime) {
+        //cout << "Adding Mangrove:(" << bpNode << ',' << bpTime << ')' << endl;
+        Mangrove new_mangrove(bpNode, bpTime, G.n);
         ////Forward
-        vector<type_arc> farcs = {};
-        newmangrove.ftimes = G.FSPT(bpnode, bptime, farcs);
-        //Add nodes to mangrove and ftimednodes
+        vector<type_arc> f_arcs = {};
+        new_mangrove.f_times = G.FSPT(bpNode, bpTime, f_arcs);
+        //Add nodes to mangrove and fTimedNodes
         for (int i = 0; i < G.n; i++) {
-            if (newmangrove.ftimes[i] <= G.endT) {
-                TimedNode ftimednode(i, newmangrove.ftimes[i], bpnode, bptime, 1);
-                auto itbool = ftimednodes[i][bpnode].insert(ftimednode);
-                auto it = itbool.first;
-                auto currtimednode = &(*it);
-                newmangrove.fnodes[i] = currtimednode;
-            }
-            else {
-                newmangrove.fnodes[i] = nullptr;
+            if (new_mangrove.f_times[i] <= G.endT) {
+                TimedNode f_timedNode(i, new_mangrove.f_times[i], bpNode, bpTime, 1);
+                auto it_bool = fTimedNodes[i][bpNode].insert(f_timedNode);
+                auto it = it_bool.first;
+                auto curr_timedNode = &(*it);
+                new_mangrove.f_nodes[i] = curr_timedNode;
+            } else {
+                new_mangrove.f_nodes[i] = nullptr;
             }
         }
         ////Backward
-        vector<type_arc> barcs = {};
-        newmangrove.btimes = G.BSPT(bpnode, bptime, barcs);
-        //Add nodes to mangrove and btimednodes
+        vector<type_arc> b_arcs = {};
+        new_mangrove.b_times = G.BSPT(bpNode, bpTime, b_arcs);
+        //Add nodes to mangrove and bTimedNodes
         for (int i = 0; i < G.n; i++) {
-            if (newmangrove.btimes[i] >= G.startT) {
-                TimedNode btimednode(i, newmangrove.btimes[i], bpnode, bptime, 0);
-                auto itbool = btimednodes[i][bpnode].insert(btimednode);
-                auto it = itbool.first;
-                auto currtimednode = &(*it);
-                newmangrove.bnodes[i] = currtimednode;
-            }
-            else {
-                newmangrove.bnodes[i] = nullptr;
+            if (new_mangrove.b_times[i] >= G.startT) {
+                TimedNode b_timedNode(i, new_mangrove.b_times[i], bpNode, bpTime, 0);
+                auto it_bool = bTimedNodes[i][bpNode].insert(b_timedNode);
+                auto it = it_bool.first;
+                auto curr_timedNode = &(*it);
+                new_mangrove.b_nodes[i] = curr_timedNode;
+            } else {
+                new_mangrove.b_nodes[i] = nullptr;
             }
         }
         //Do everything resolved
-        newmangrove.resolved = 1;
+        new_mangrove.resolved = 1;
         //Add arcs in FSPT to outMapLB and outMapUB with travel times in ttMapLB and ttMapUB
-        for (type_arc arc : farcs) {
+        for (type_arc arc: f_arcs) {
             int i = arc.first, j = arc.second;
-            if (newmangrove.ftimes[i] <= G.endT && newmangrove.ftimes[j] <= G.endT) {
-                const TimedNode* timednodei = newmangrove.fnodes[i];
-                const TimedNode* timednodej = newmangrove.fnodes[j];
-                outMapUB[timednodei].push_back(timednodej);
-                ttMapUB[{timednodei, timednodej}] = G.TT(i, j, newmangrove.ftimes[i]);
+            if (new_mangrove.f_times[i] <= G.endT && new_mangrove.f_times[j] <= G.endT) {
+                const TimedNode *timedNode_i = new_mangrove.f_nodes[i];
+                const TimedNode *timedNode_j = new_mangrove.f_nodes[j];
+                outMapUB[timedNode_i].push_back(timedNode_j);
+                ttMapUB[{timedNode_i, timedNode_j}] = G.TT(i, j, new_mangrove.f_times[i]);
             }
         }
         //Add arcs in BSPT to outMapLB and outMapUB with travel times in ttMapLB and ttMapUB
-        for (type_arc arc : barcs) {
+        for (type_arc arc: b_arcs) {
             int i = arc.first, j = arc.second;
-            if (newmangrove.btimes[i] >= G.startT && newmangrove.btimes[j] >= G.startT) {
-                const TimedNode* timednodei = newmangrove.bnodes[i];
-                const TimedNode* timednodej = newmangrove.bnodes[j];
-                outMapUB[timednodei].push_back(timednodej);
-                ttMapUB[{timednodei, timednodej}] = G.TT(i, j, newmangrove.btimes[i]);
+            if (new_mangrove.b_times[i] >= G.startT && new_mangrove.b_times[j] >= G.startT) {
+                const TimedNode *timedNode_i = new_mangrove.b_nodes[i];
+                const TimedNode *timedNode_j = new_mangrove.b_nodes[j];
+                outMapUB[timedNode_i].push_back(timedNode_j);
+                ttMapUB[{timedNode_i, timedNode_j}] = G.TT(i, j, new_mangrove.b_times[i]);
             }
         }
-        auto itbool = mangroves[bpnode].insert(newmangrove);
-        const Mangrove* manptr = &(*itbool.first);
-        mangroveMap[bpnode][bptime] = manptr;
-        return manptr;
+        auto it_bool = mangroves[bpNode].insert(new_mangrove);
+        const Mangrove *man_ptr = &(*it_bool.first);
+        mangroveMap[bpNode][bpTime] = man_ptr;
+        return man_ptr;
     }
+
     Output findEnumMTT() {
         auto start = chrono::high_resolution_clock::now();
-        const Mangrove* lastmangrove = addEnumMangrove(G.endN, G.endT);
-        destination = lastmangrove->bnodes[G.endN];
-        const Mangrove* firstmangrove = addEnumMangrove(G.startN, G.startT);
-        origin = firstmangrove->fnodes[G.startN];
+        const Mangrove *lastMangrove = addEnumMangrove(G.endN, G.endT);
+        destination = lastMangrove->b_nodes[G.endN];
+        const Mangrove *firstMangrove = addEnumMangrove(G.startN, G.startT);
+        origin = firstMangrove->f_nodes[G.startN];
         for (int i = 0; i < G.n; i++) {
-            int leftt, rightt;
-            if ((int)lastmangrove->btimes[i] == lastmangrove->btimes[i]) {
-                rightt = lastmangrove->btimes[i] - 1;
+            int leftT, rightT;
+            if ((int) lastMangrove->b_times[i] == lastMangrove->b_times[i]) {
+                rightT = lastMangrove->b_times[i] - 1;
+            } else {
+                rightT = floor(lastMangrove->b_times[i]);
             }
-            else {
-                rightt = floor(lastmangrove->btimes[i]);
+            if ((int) firstMangrove->f_times[i] == firstMangrove->f_times[i]) {
+                leftT = firstMangrove->f_times[i] + 1;
+            } else {
+                leftT = ceil(firstMangrove->f_times[i]);
             }
-            if ((int)firstmangrove->ftimes[i] == firstmangrove->ftimes[i]) {
-                leftt = firstmangrove->ftimes[i] + 1;
-            }
-            else {
-                leftt = ceil(firstmangrove->ftimes[i]);
-            }
-            for (int t = leftt; t <= rightt; t++) {
-                const Mangrove* newmangrove = addEnumMangrove(i, t);
+            for (int t = leftT; t <= rightT; t++) {
+                const Mangrove *new_mangrove = addEnumMangrove(i, t);
             }
         }
         pair<type_path, double> pathOpt = findUB();
@@ -1480,10 +1502,10 @@ public:
         Output output;
         output.md = 0;
         output.ddd = 0;
-        output.bpexplored = (G.n - 1) * (G.endT - G.startT - 1) + 2;
+        output.bpExplored = (G.n - 1) * (G.endT - G.startT - 1) + 2;
         output.runtime = duration.count();
         printUBPath(pathOpt.first, output);
-        output.optval = pathOpt.second;
+        output.optVal = pathOpt.second;
         return output;
     };
 
@@ -1491,13 +1513,14 @@ public:
     void printCurrentABSPTs() {
         printBar();
         cout << "Printing Current ABSPTs:" << endl;
-        for (auto abspt : abspts) {
-            cout << "(" << abspt.bpnode << ',' << abspt.bptime << "), resolved = " << (bool)(abspt.lb == abspt.ub);
-            cout<< ", lb = " << abspt.lb << ", ub = " << abspt.ub << endl;
+        for (auto abspt: abspts) {
+            cout << "(" << abspt.bpNode << ',' << abspt.bpTime << "), resolved = " << (bool) (abspt.lb == abspt.ub);
+            cout << ", lb = " << abspt.lb << ", ub = " << abspt.ub << endl;
         }
         printBar();
     }
-    void printOptPath(const Absptit& abspt, Output& output, bool flag=0) {
+
+    void printOptPath(const Abspt_it &abspt, Output &output, bool flag = 0) {
         if (flag) printBar();
         if (flag) cout << "Printing Opt Path: " << endl;
         output.arctotal = 0;
@@ -1506,9 +1529,9 @@ public:
         int curr = G.endN;
         stack<pair<int, double>> st;
         while (curr != G.startN) {
-            for (type_arc arc : arcs) {
+            for (type_arc arc: arcs) {
                 if (curr == arc.second) {
-                    st.push({ curr,times[curr] });
+                    st.push({curr, times[curr]});
                     curr = arc.first;
                     break;
                 }
@@ -1516,25 +1539,26 @@ public:
         }
         if (flag) cout << "(" << curr << ',' << times[curr] << ")" << endl;
         while (!st.empty()) {
-            auto currtimes = st.top();
-            if(flag) cout << "(" << currtimes.first << ',' << currtimes.second << ")" << endl;
+            auto curr_times = st.top();
+            if (flag) cout << "(" << curr_times.first << ',' << curr_times.second << ")" << endl;
             output.arctotal++;
             st.pop();
         }
         if (flag) printBar();
     }
-    void printOptPath(const Mangrove& mangrove, Output& output, bool flag = 0) {
+
+    void printOptPath(const Mangrove &mangrove, Output &output, bool flag = 0) {
         if (flag) printBar();
         if (flag) cout << "Printing Opt Path: " << endl;
         output.arctotal = 0;
         vector<type_arc> arcs = {};
-        vector<double> times = G.FSPT(G.startN, mangrove.btimes[G.startN], arcs);
+        vector<double> times = G.FSPT(G.startN, mangrove.b_times[G.startN], arcs);
         int curr = G.endN;
         stack<pair<int, double>> st;
         while (curr != G.startN) {
-            for (type_arc arc : arcs) {
+            for (type_arc arc: arcs) {
                 if (curr == arc.second) {
-                    st.push({ curr,times[curr] });
+                    st.push({curr, times[curr]});
                     curr = arc.first;
                     break;
                 }
@@ -1542,102 +1566,125 @@ public:
         }
         if (flag) cout << "(" << curr << ',' << times[curr] << ")" << endl;
         while (!st.empty()) {
-            auto currtimes = st.top();
-            if (flag) cout << "(" << currtimes.first << ',' << currtimes.second << ")" << endl;
+            auto curr_times = st.top();
+            if (flag) cout << "(" << curr_times.first << ',' << curr_times.second << ")" << endl;
             output.arctotal++;
             st.pop();
         }
         if (flag) printBar();
     }
-    void printOptMD(const Absptit& abspt) {
+
+    void printOptMD(const Abspt_it &abspt) {
         cout << "Optimal MD starting time:" << abspt->times[G.startN] << endl;
         cout << "Optimal MD val:" << abspt->lb << endl;
-        cout << "Optimal MD breakpoint: (" << abspt->bpnode << ',' << abspt->bptime << ')' << endl;
+        cout << "Optimal MD breakpoint: (" << abspt->bpNode << ',' << abspt->bpTime << ')' << endl;
     }
-    void printPathInfo(pair<type_path, double>& pathLB, pair<type_path, double>& pathUB) {
+
+    void printPathInfo(pair<type_path, double> &pathLB, pair<type_path, double> &pathUB) {
         Output output;
         printLBPath(pathLB.first, output, 1);
         cout << "current lower bound = " << pathLB.second << endl;
         printUBPath(pathUB.first, output, 1);
         cout << "current upper bound = " << pathUB.second << endl;
     }
-    void printLBPath(type_path path, Output& output, bool flag = 0) {
+
+    void printLBPath(type_path path, Output &output, bool flag = 0) {
         if (flag) printBar();
         if (flag) cout << "Printing LB Path: " << endl;
         output.arctotal = 0;
-        output.subpathtotal = 0;
+        output.subPathTotal = 0;
         bool waiting = 1;
         for (int i = 1; i < path.size(); i++) {
-            const TimedNode* node = path[i];
+            const TimedNode *node = path[i];
             if (path[i - 1]->nodeID != path[i]->nodeID) {
-                TimedArcptr arc = { path[i - 1],path[i] };
+                TimedArc_ptr arc = {path[i - 1], path[i]};
                 if (flag) cout << "arc cost: " << ttMapLB[arc] << endl;
-                double UBcost = (path[i - 1]->nodeID == path[i]->nodeID) ? 0 : path[i]->time - path[i - 1]->time;
-                if (flag) cout << "UB arc cost: " << UBcost << endl;
+                double UB_cost = (path[i - 1]->nodeID == path[i]->nodeID) ? 0 : path[i]->time - path[i - 1]->time;
+                if (flag) cout << "UB arc cost: " << UB_cost << endl;
                 output.arctotal++;
-                if (flag) cout << "at: (" << node->nodeID << ',' << node->time << "), in mangrove: (" << node->bpnode << ',' << node->bptime << ")" << endl;
+                if (flag)
+                    cout << "at: (" << node->nodeID << ',' << node->time << "), in mangrove: (" << node->bpnode << ','
+                         << node->bptime << ")" << endl;
                 if (waiting) {
                     waiting = 0;
-                    output.subpathtotal++;
+                    output.subPathTotal++;
                 }
-            }
-            else {
+            } else {
                 waiting = 1;
             }
         }
         if (flag) printBar();
     }
-    void printUBPath(type_path path, Output& output, bool flag = 0) {
+
+    void printUBPath(type_path path, Output &output, bool flag = 0) {
         if (flag) printBar();
         if (flag) cout << "Printing UB Path: " << endl;
         output.arctotal = 0;
-        output.subpathtotal = 0;
+        output.subPathTotal = 0;
         bool waiting = 1;
         for (int i = 1; i < path.size(); i++) {
-            const TimedNode* node = path[i];
+            const TimedNode *node = path[i];
             if (path[i - 1]->nodeID != path[i]->nodeID) {
-                TimedArcptr arc = { path[i - 1],path[i] };
+                TimedArc_ptr arc = {path[i - 1], path[i]};
                 if (flag) cout << "arc cost: " << ttMapUB[arc] << endl;
                 output.arctotal++;
-                if (flag) cout << "at: (" << node->nodeID << ',' << node->time << "), in mangrove: (" << node->bpnode << ',' << node->bptime << ")" << endl;
+                if (flag)
+                    cout << "at: (" << node->nodeID << ',' << node->time << "), in mangrove: (" << node->bpnode << ','
+                         << node->bptime << ")" << endl;
                 if (waiting) {
                     waiting = 0;
-                    output.subpathtotal++;
+                    output.subPathTotal++;
                 }
-            }
-            else {
+            } else {
                 waiting = 1;
             }
         }
         if (flag) printBar();
     }
+
     void printCurrentMangroves() {
         printBar();
         cout << "Printing Current Mangroves:" << endl;
-        for (auto mangroveset : mangroves) {
-            for (auto mangrove : mangroveset) {
-                cout << "(" << mangrove.bpnode << ',' << mangrove.bptime << "), resolved = " << mangrove.resolved << endl;
+        for (auto mangrove_set: mangroves) {
+            for (auto mangrove: mangrove_set) {
+                cout << "(" << mangrove.bpNode << ',' << mangrove.bpTime << "), resolved = " << mangrove.resolved
+                     << endl;
             }
         }
         printBar();
     }
-    void printBPtoAdd(set<type_bp>& nextbps) {
+
+    void printBPtoAdd(set<type_bp> &next_bps) {
         printBar();
         cout << "Printing BP to Add:" << endl;
-        for (type_bp bp : nextbps) {
+        for (type_bp bp: next_bps) {
             cout << "(" << bp.first << ',' << bp.second << ")" << endl;
         }
         printBar();
     }
+
     void printBar() {
         cout << "====================================================================" << endl;
     }
 
     //Initializer
     Graph G;
-    TEN(const int n, const int eT, const int gtype, const int ttype, const int seed,  const int sT = 0) : G(n, eT, sT), timednodes(n), ftimednodes(n, vector<set_timednode>(n)), btimednodes(n, vector<set_timednode>(n)), mangroves(n), mangroveMap(n) {
+
+    TEN(const int n, const int eT, const int gtype, const int tType, const int seed, const int sT = 0) : G(n, eT, sT),
+                                                                                                         timedNodes(n),
+                                                                                                         fTimedNodes(n,
+                                                                                                                     vector<set_timedNode>(
+                                                                                                                             n)),
+                                                                                                         bTimedNodes(n,
+                                                                                                                     vector<set_timedNode>(
+                                                                                                                             n)),
+                                                                                                         mangroves(n),
+                                                                                                         mangroveMap(
+                                                                                                                 n) {
         /*number of nodes, end time, graph type, travel time type, seed, start time (optional)*/
-        string filename = "Data/n" + to_string(n) + "T" + to_string(eT) + "gt" + to_string(gtype) + "tt" + to_string(ttype) + "s" + to_string(seed) + ".csv";
+        string filename =
+                "Data/n" + to_string(n) + "T" + to_string(eT) + "gt" + to_string(gtype) + "tt" + to_string(tType) +
+                "s" + to_string(seed) + ".csv";
         cout << "opening:" << filename << endl;
         std::ifstream nodeFile(filename.c_str());
         if (!nodeFile.is_open()) {
@@ -1663,8 +1710,7 @@ public:
         }
         if (G.checkFIFO()) {
             cout << "read successful!" << endl;
-        }
-        else {
+        } else {
             cerr << "Error: FIFO violated" << endl;
             cin.get();
         }
@@ -1672,41 +1718,42 @@ public:
     }
 };
 
-void runTest(vector<int> ns, vector<int> endTs, vector<int> gtypes, vector<int> ttypes, vector<int> seeds, const int commonsT=0, bool md = 1, bool mtt = 1, bool mdenum = 1, bool mttenum = 1) {
-    string mdfilename = "Results/experimentsMDMED.csv";
-    string mttfilename = "Results/MTTBPMMED.csv";
-    if (md) writeSOutputCSVHeader(mdfilename);
-    if (mtt) writeSOutputCSVHeader(mttfilename);
-    for (int n : ns) {
-        for (int commoneT : endTs) {
-            for (int gtype : gtypes) {
-                for (int ttype : ttypes) {
-                    SummaryOutput myMDOutput(mdfilename, n, commoneT - commonsT, gtype, ttype, seeds.size(), 1);
-                    SummaryOutput myMTTOutput(mttfilename, n, commoneT - commonsT, gtype, ttype, seeds.size(), 0);
+void runTest(vector<int> ns, vector<int> endTs, vector<int> gTypes, vector<int> tTypes, vector<int> seeds,
+             const int commonsT = 0, bool md = 1, bool mtt = 1, bool mdEnum = 1, bool mttEnum = 1) {
+    string md_filename = "Results/experimentsMDMED.csv";
+    string mtt_filename = "Results/MTTBPMMED.csv";
+    if (md) writeSOutputCSVHeader(md_filename);
+    if (mtt) writeSOutputCSVHeader(mtt_filename);
+    for (int n: ns) {
+        for (int common_endTime: endTs) {
+            for (int gtype: gTypes) {
+                for (int ttype: tTypes) {
+                    SummaryOutput myMDOutput(md_filename, n, common_endTime - commonsT, gtype, ttype, seeds.size(), 1);
+                    SummaryOutput myMTTOutput(mtt_filename, n, common_endTime - commonsT, gtype, ttype, seeds.size(), 0);
                     string filename = "Results/experimentsMDMEDlog.csv";
-                    //string filename = "Results/n" + to_string(n) + "T" + to_string(commoneT - commonsT) + "g" + to_string(gtype) + "t" + to_string(ttype) + ".csv";
+                    //string filename = "Results/n" + to_string(n) + "T" + to_string(common_endTime - commonsT) + "g" + to_string(gtype) + "t" + to_string(ttype) + ".csv";
                     writeOutputCSVHeader(filename);
-                    for (int seed : seeds) {
+                    for (int seed: seeds) {
                         if (md) {
-                            TEN my_ten(n, commoneT, gtype, ttype, seed);
+                            TEN my_ten(n, common_endTime, gtype, ttype, seed);
                             Output output = my_ten.findMD();
                             output.writeOutputCSV(filename);
                             myMDOutput.updateSummaryOutput(output);
                         }
-                        if (mdenum) {
-                            TEN my_ten(n, commoneT, gtype, ttype, seed);
+                        if (mdEnum) {
+                            TEN my_ten(n, common_endTime, gtype, ttype, seed);
                             Output output = my_ten.findEnumMD();
                             output.writeOutputCSV(filename);
                             myMDOutput.updateSummaryOutput(output);
                         }
                         if (mtt) {
-                            TEN my_ten(n, commoneT, gtype, ttype, seed);
+                            TEN my_ten(n, common_endTime, gtype, ttype, seed);
                             Output output = my_ten.findMTT();
                             output.writeOutputCSV(filename);
                             myMTTOutput.updateSummaryOutput(output);
                         }
-                        if (mttenum) {
-                            TEN my_ten(n, commoneT, gtype, ttype, seed);
+                        if (mttEnum) {
+                            TEN my_ten(n, common_endTime, gtype, ttype, seed);
                             Output output = my_ten.findEnumMTT();
                             output.writeOutputCSV(filename);
                             myMTTOutput.updateSummaryOutput(output);
@@ -1723,10 +1770,9 @@ void runTest(vector<int> ns, vector<int> endTs, vector<int> gtypes, vector<int> 
 }
 
 
-int main()
-{
-    //runTest({ 30 }, 40, { 1 }, { 1 }, { 1 });
-    //runTest({ 30,50 }, 20, { 1,2,3 }, { 1,2 }, { 1,2,3,4,5,6,7,8,9,10 });
+int main() {
+    // runTest({ 30 }, {40}, { 1 }, { 1 }, { 1 });
+    runTest({30, 50}, {20}, {1, 2, 3}, {1, 2}, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10});
     //runTest({ 1000 }, { 20,40 }, { 1,2,3 }, { 1,2 }, { 1,2,3,4,5 }, 0, 1, 0, 1, 0);
     //runTest({ 1000 }, { 40 }, { 3 }, { 2 }, { 1,2,3,4,5 }, 0, 1, 0, 1, 0);
     //runTest({ 20 }, { 1000 }, { 1,2,3 }, { 1,2 }, { 1,2,3 }, 0, 0, 1, 0, 1);
@@ -1735,8 +1781,8 @@ int main()
     //runTest({ 50 }, { 40 }, { 1,2,3 }, { 1,2 }, { 1,2,3 }, 0, 0, 1, 0, 0);
     //runTest({ 50 }, { 20,40,60,80,100 }, { 1,2,3 }, { 1,2 }, { 1,2,3,4,5,6,7,8,9,10 }, 0, 1, 0, 1, 0);
     //runTest({ 60 }, { 50,100,150,200,250 }, { 1,2,3 }, { 1,2 }, { 1,2,3 }, 0, 0, 1, 0, 1);
-    runTest({ 10000 }, { 40 }, { 1 }, { 1 }, { 1 }, 0, 1, 0, 1, 0);
-    
+    // runTest({ 10000 }, { 40 }, { 1 }, { 1 }, { 1 }, 0, 1, 0, 1, 0);
+
 
     //TEN my_ten(30, 40, 1, 1, 1);
     //Output output = my_ten.findMTT();
