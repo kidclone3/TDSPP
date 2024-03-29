@@ -19,132 +19,13 @@
 #include <cmath>
 #include <climits>
 
+// Import self-defined classes:
+#include "Output.h"
+#include "SummaryOutput.h"
+
 using namespace std;
 typedef pair<int, int> TypeArc;
 typedef pair<int, int> TypeBP;
-
-struct Output {
-    bool md = 0;
-    bool ddd = 0;
-    int bpExplored = 0;
-    double runtime = 0;
-    double add_runtime = 0;
-    double sp_runtime = 0;
-    int arc_total = 0;
-    int subPathTotal = 1;
-    double optVal = 0;
-    int iter = 0;
-
-    void writeOutputCSV(string &filename) {
-        ofstream myFile(filename, ofstream::app);
-        myFile << this->md << ',';
-        myFile << this->ddd << ',';
-        myFile << this->bpExplored << ',';
-        myFile << this->runtime << ',';
-        myFile << this->add_runtime << ',';
-        myFile << this->sp_runtime << ',';
-        myFile << this->arc_total << ',';
-        myFile << this->subPathTotal << ',';
-        myFile << this->iter << ',';
-        myFile << this->optVal << endl;
-        myFile.close();
-        return;
-    }
-};
-
-class SummaryOutput {
-public:
-    bool md;
-    int n;
-    int T;
-    int gtype;
-    int ttype;
-    int numseed;
-    int bpExplored = 0;
-    double runtime = 0;
-    double enumtime = 0;
-    int arc_total = 0;
-    int subpath_total = 0;
-    double avg_bpExplored = 0;
-    int bp_total = 0;
-    double percent_bp = 0;
-    double avg_runtime = 0;
-    double avg_enumtime = 0;
-    double percent_time = 0;
-    double gavg_percent_time = 1;
-    double avg_arc = 0;
-    double avg_subpath = 0;
-    double total_add_runtime = 0;
-    double total_sp_runtime = 0;
-    double avg_add_runtime = 0;
-    double avg_sp_runtime = 0;
-    int iter = 0;
-    string filename;
-
-    SummaryOutput(string filename, int n, int T, int gtype, int ttype, int numseed, bool md) {
-        this->filename = filename;
-        this->n = n;
-        this->T = T;
-        this->gtype = gtype;
-        this->ttype = ttype;
-        this->numseed = numseed;
-        this->md = md;
-    }
-
-    void updateSummaryOutput(Output &output) {
-        if (output.ddd) {
-            bpExplored += output.bpExplored;
-            runtime += output.runtime;
-            total_add_runtime += output.add_runtime;
-            total_sp_runtime += output.sp_runtime;
-            arc_total += output.arc_total;
-            subpath_total += output.subPathTotal;
-            gavg_percent_time *= output.runtime;
-            iter += output.iter;
-        } else {
-            bp_total = output.bpExplored;
-            enumtime += output.runtime;
-            gavg_percent_time /= output.runtime;
-        }
-        return;
-    }
-
-    void calcSummaryOutput() {
-        avg_arc = (double) arc_total / numseed;
-        avg_bpExplored = (double) bpExplored / numseed;
-        avg_enumtime = enumtime / numseed;
-        avg_runtime = runtime / numseed;
-        avg_add_runtime = total_add_runtime / numseed;
-        avg_sp_runtime = total_sp_runtime / numseed;
-        avg_subpath = (double) subpath_total / numseed;
-        percent_time = 100 * avg_runtime / avg_enumtime;
-        percent_bp = 100 * (double) avg_bpExplored / bp_total;
-        return;
-    }
-
-    void writeSOutputCSV() {
-        ofstream myFile(filename, ofstream::app);
-        myFile << n << ',';
-        myFile << T << ',';
-        myFile << gtype << ',';
-        myFile << ttype << ',';
-        myFile << md << ',';
-        myFile << avg_bpExplored << ',';
-        myFile << bp_total << ',';
-        myFile << percent_bp << ',';
-        myFile << pow(gavg_percent_time, 1.0 / numseed) << ',';
-        myFile << avg_add_runtime << ',';
-        myFile << avg_sp_runtime << ',';
-        myFile << avg_arc << ',';
-        myFile << avg_subpath << ',';
-        myFile << avg_runtime << ',';
-        myFile << avg_enumtime << ',';
-        myFile << percent_time << ',';
-        myFile << iter << endl;
-        myFile.close();
-        return;
-    }
-};
 
 void writeOutputCSVHeader(const string &filename) {
     ofstream myFile(filename, ofstream::app);
@@ -680,27 +561,42 @@ public:
     }
 
     Output findMD() {
+        // Initialize breakpoint exploration and iteration counters
         int bpExplored = 0;
         int iter = 0;
+
+        // Start the timer
         auto start = chrono::high_resolution_clock::now();
+
+        // Add the end and start nodes to the ABSPT
         addABSPT(G.endN, G.endT);
         addABSPT(G.startN, G.startT);
         iter += 2;
         bpExplored += 2;
+
+        // Get iterators to the lower and upper bounds
         auto lb_it = abspt_lbs.begin();
         auto ub_it = abspt_ubs.begin();
         //cout << "current lower bound=" << (*lb_it)->lb << endl;
         //cout << "current upper bound=" << (*ub_it)->ub << endl;
         //printCurrentABSPTs();
+
+        // Loop until the lower and upper bounds are equal
         while ((*lb_it)->lb != (*ub_it)->ub) {
             auto my_abspt = **lb_it;
+
+            // Find the next break point
             TypeBP next_bp = findBP(my_abspt);
+
+            // If no breakpoint is found, resolve the ABSPT
+            // Otherwise, add the new ABSPT
             if (next_bp.first == -1) {
                 resolveABSPT(my_abspt);
             } else {
                 addABSPT(next_bp.first, next_bp.second);
                 bpExplored++;
             }
+//            Update iterators
             lb_it = abspt_lbs.begin();
             ub_it = abspt_ubs.begin();
             iter++;
@@ -711,14 +607,18 @@ public:
         auto stop = chrono::high_resolution_clock::now();
         auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
         cout << "Time taken by function: " << duration.count() << " milliseconds" << endl;
+
+// Prepare output
         Output output;
         output.md = 1;
         output.ddd = 1;
         output.bpExplored = bpExplored;
         output.runtime = duration.count();
         output.iter = iter;
+
         printOptPath(*lb_it, output);
         //printOptMD(*lb_it);
+//        Set the remaining output parameters
         output.subPathTotal = 1;
         output.optVal = (*lb_it)->lb;
         return output;
