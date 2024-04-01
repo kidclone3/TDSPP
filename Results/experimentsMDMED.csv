@@ -44,3 +44,5 @@ n,T,gtype,ttype,md,Avg BP Explored,Total BP,BP Explored (%),Geom Run-Time (%),Ad
 n,T,gtype,ttype,md,Avg BP Explored,Total BP,BP Explored (%),Geom Run-Time (%),Add Run-Time (ms),SP Run-Time (ms),Avg #Arcs in Soln,Avg #Subpaths in Soln,Avg DDD Run-Time (ms),Avg Enum Run-Time (ms),Run-Time (%),Iterations
 n,T,gtype,ttype,md,Avg BP Explored,Total BP,BP Explored (%),Geom Run-Time (%),Add Run-Time (ms),SP Run-Time (ms),Avg #Arcs in Soln,Avg #Subpaths in Soln,Avg DDD Run-Time (ms),Avg Enum Run-Time (ms),Run-Time (%),Iterations
 n,T,gtype,ttype,md,Avg BP Explored,Total BP,BP Explored (%),Geom Run-Time (%),Add Run-Time (ms),SP Run-Time (ms),Avg #Arcs in Soln,Avg #Subpaths in Soln,Avg DDD Run-Time (ms),Avg Enum Run-Time (ms),Run-Time (%),Iterations
+n,T,gtype,ttype,md,Avg BP Explored,Total BP,BP Explored (%),Geom Run-Time (%),Add Run-Time (ms),SP Run-Time (ms),Avg #Arcs in Soln,Avg #Subpaths in Soln,Avg DDD Run-Time (ms),Avg Enum Run-Time (ms),Run-Time (%),Iterations
+30,40,1,1,1,36,1133,3.17741,0.0644531,0,0,6,1,33,512,6.44531,45

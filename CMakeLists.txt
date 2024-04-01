@@ -23,5 +23,7 @@ add_executable(TDSPP
         SummaryOutput.cpp
         SummaryOutput.h
         Graph.cpp
-        Graph.h)
+        Graph.h
+        TEN.h
+        TEN.cpp)
 #        TDSPP_8_19.cpp)

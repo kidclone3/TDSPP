@@ -1192,4 +1192,5 @@ Is MD?,Is DDD?,BP Explored,Run-Time,Add Run-Time,SP Run-Time,#Arcs in Soln,#Subp
 Is MD?,Is DDD?,BP Explored,Run-Time,Add Run-Time,SP Run-Time,#Arcs in Soln,#Subpaths in Soln,Iterations,Opt Obj
 1,1,36,43,0,0,6,1,45,1,0,1133,746,0,0,6,1,0,0,1,266,1405,420,872,6,3,8,Is MD?,Is DDD?,BP Explored,Run-Time,Add Run-Time,SP Run-Time,#Arcs in Soln,#Subpaths in Soln,Iterations,Opt Obj
 1,1,36,44,0,0,6,1,45,1,0,1133,689,0,0,6,1,0,Is MD?,Is DDD?,BP Explored,Run-Time,Add Run-Time,SP Run-Time,#Arcs in Soln,#Subpaths in Soln,Iterations,Opt Obj
-1,1,36,41,0,0,6,1,45,1,0,1133,744,0,0,6,1,0,0,1,266,1295,357,803,6,3,8,
+1,1,36,41,0,0,6,1,45,1,0,1133,744,0,0,6,1,0,0,1,266,1295,357,803,6,3,8,Is MD?,Is DDD?,BP Explored,Run-Time,Add Run-Time,SP Run-Time,#Arcs in Soln,#Subpaths in Soln,Iterations,Opt Obj
+1,1,36,33,0,0,6,1,45,1,0,1133,512,0,0,6,1,0,0,1,266,863,203,563,6,3,8,0,0,1133,1010,0,0,6,3,0,
