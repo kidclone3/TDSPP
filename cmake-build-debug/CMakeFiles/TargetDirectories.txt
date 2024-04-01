@@ -1,3 +1,0 @@
-/home/delus/Documents/TDSPP/cmake-build-debug/CMakeFiles/TDSPP.dir
-/home/delus/Documents/TDSPP/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/delus/Documents/TDSPP/cmake-build-debug/CMakeFiles/rebuild_cache.dir
