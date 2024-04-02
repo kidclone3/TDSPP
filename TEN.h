@@ -1,15 +1,12 @@
 #ifndef TDSPP_TEN_H
 #define TDSPP_TEN_H
+
 #include <vector>
 #include <set>
-#include <climits>
-#include <chrono>
 #include <math.h>
-#include <random>
 #include <iostream>
 #include <map>
-#include <queue>
-
+#include <climits>
 #include "Output.h"
 #include "Graph.h"
 
@@ -160,7 +157,7 @@ public:
     typedef vector<const TimedNode *> type_path;
 
     //Minimum Travel Time Functions
-    const Mangrove* addMangrove(const int bpNode, const int bpTime);
+    const Mangrove *addMangrove(const int bpNode, const int bpTime);
 
     pair<type_path, double> findLB();
 
