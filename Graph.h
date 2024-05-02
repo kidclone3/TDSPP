@@ -53,7 +53,7 @@ public:
     map<TypeArc, vector<double>> ttMap;
     map<TypeArc, vector<int>> ittfloorMap; //returns floor guess for each integer endt
     map<TypeArc, vector<int>> ittceilMap; //returns ceil guess for each integer endt
-    map<TypeArc, vector<vector<double>>> minttMap; //returns table of min travel time for arc in interval
+    map<TypeArc, vector<vector<double>>> minttMap; //returns table of min travel time for arc in interval aka UTT
     map<TypeArc, vector<vector<int>>> min_idx_ttMap; //returns table of departure time of min travel times for arc in interval
     typedef pair<int, double> type_timedNode;
 

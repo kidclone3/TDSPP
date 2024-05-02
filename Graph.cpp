@@ -46,17 +46,17 @@ Graph::Graph(const int n, const int eT, const int sT, const int start_n, const i
         //ifloorMap
         int T = endT - startT + 1;
         int curr = 0;
-        vector<int> ifloor_traveltimes(T);
+        vector<int> ifloorTravel_times(T);
         for (int i = 0; i < T; i++) {
             while (curr <= T - 1 && curr + travel_times[curr] <= i) {
                 curr++;
             }
-            ifloor_traveltimes[i] = curr - 1;
+            ifloorTravel_times[i] = curr - 1;
             //cout << "floor:";
             //cout << i << ',' << travel_times[i] << ',';
             //cout << i << ',' << ifloor_traveltimes[i] << endl;
         }
-        ittfloorMap[arc] = ifloor_traveltimes;
+        ittfloorMap[arc] = ifloorTravel_times;
         //iceilMap
         curr = T - 1;
         vector<int> iceil_travel_times(T);
