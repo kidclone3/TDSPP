@@ -4,8 +4,9 @@
 
 #ifndef TDSPP_OUTPUT_H
 #define TDSPP_OUTPUT_H
+
 #include <string>
-#include <fstream>
+
 using namespace std;
 
 struct Output {

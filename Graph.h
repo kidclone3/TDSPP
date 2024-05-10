@@ -4,13 +4,11 @@
 
 #ifndef TDSPP_GRAPH_H
 #define TDSPP_GRAPH_H
+
 #include <string>
 #include <vector>
 #include <map>
-#include <queue>
-#include <iostream>
 #include <math.h>
-#include <climits>
 
 using namespace std;
 

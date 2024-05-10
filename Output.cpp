@@ -4,6 +4,8 @@
 
 #include "Output.h"
 
+#include <fstream>
+
 void Output::writeOutputCSV(string &filename) {
     ofstream myFile(filename, ofstream::app);
     myFile << this->md << ',';

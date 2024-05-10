@@ -5,24 +5,13 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include <map>
-#include <unordered_map>
 #include <fstream>
-#include <chrono>
 #include <sstream>
 #include <algorithm>
-#include <queue>
-#include <set>
-#include <stack>
-#include <assert.h>
-#include <math.h>
-#include <cmath>
-#include <climits>
 
 // Import self-defined classes:
 #include "Output.h"
 #include "SummaryOutput.h"
-#include "Graph.h"
 #include "TEN.h"
 
 using namespace std;

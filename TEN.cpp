@@ -1,6 +1,11 @@
 #include <cassert>
 #include <algorithm>
 #include <stack>
+#include <fstream>
+#include <queue>
+#include <random>
+
+#include <chrono>
 #include "TEN.h"
 
 //Minimum Duration Functions
