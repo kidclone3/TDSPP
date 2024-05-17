@@ -5,10 +5,14 @@
 #include <set>
 #include <math.h>
 #include <iostream>
-#include <map>
 #include <climits>
 #include "Output.h"
 #include "Graph.h"
+
+//#include <map>
+#include <map>
+
+//#define map map
 
 using namespace std;
 
@@ -80,11 +84,11 @@ public:
     set<Abspt_it, Abspt_compare_ub> abspt_ubs;
 
     //Minimum Duration Functions
-    void addABSPT(const int bpNode, const int bpTime);
+    void addABSPT(int bpNode, int bpTime);
 
     void resolveABSPT(Abspt &curr);
 
-    TypeBP findBP(Abspt &curr, int option = 1);
+    TypeBP findBP(Abspt &curr, int option = 0);
 
     Output findMD();
 
@@ -157,7 +161,7 @@ public:
     typedef vector<const TimedNode *> type_path;
 
     //Minimum Travel Time Functions
-    const Mangrove *addMangrove(const int bpNode, const int bpTime);
+    const Mangrove *addMangrove(int bpNode, int bpTime);
 
     pair<type_path, double> findLB();
 
@@ -174,7 +178,7 @@ public:
     //Enumeration Functions
     Output findEnumMD();
 
-    const Mangrove *addEnumMangrove(const int bpNode, const int bpTime);
+    const Mangrove *addEnumMangrove(int bpNode, int bpTime);
 
     Output findEnumMTT();
 
@@ -208,7 +212,7 @@ public:
     //Initializer
     Graph G;
 
-    TEN(const int n, const int eT, const int gtype, const int tType, const int seed, const int sT = 0);
+    TEN(int n, int eT, int gtype, int tType, int seed, int sT = 0);
 };
 
 

@@ -9,7 +9,7 @@
 #include "TEN.h"
 
 //Minimum Duration Functions
-void TEN::addABSPT(const int bpNode, const int bpTime) {
+void TEN::addABSPT(int bpNode, int bpTime) {
     //cout << "Adding ABSPT:(" << bpNode << ',' << bpTime << ')' << endl;
     Abspt new_abspt(bpNode, bpTime, G.n);
     vector<TypeArc> arcs = {};
@@ -161,7 +161,7 @@ Output TEN::findMD() {
 
 
 //Minimum Travel Time Functions
-const TEN::Mangrove *TEN::addMangrove(const int bpNode, const int bpTime) {
+const TEN::Mangrove *TEN::addMangrove(int bpNode, int bpTime) {
     //cout << "Adding Mangrove:(" << bpNode << ',' << bpTime << ')' << endl;
     Mangrove new_mangrove(bpNode, bpTime, G.n);
     auto next_it = mangroves[bpNode].upper_bound(new_mangrove);
@@ -781,7 +781,7 @@ Output TEN::findEnumMD() {
     return output;
 }
 
-const TEN::Mangrove *TEN::addEnumMangrove(const int bpNode, const int bpTime) {
+const TEN::Mangrove *TEN::addEnumMangrove(int bpNode, int bpTime) {
     //cout << "Adding Mangrove:(" << bpNode << ',' << bpTime << ')' << endl;
     Mangrove new_mangrove(bpNode, bpTime, G.n);
     ////Forward
@@ -1030,17 +1030,17 @@ void TEN::printBPtoAdd(set<TypeBP> &next_bps) {
 
 
 //Initializer
-TEN::TEN(const int n, const int eT, const int gtype, const int tType, const int seed, const int sT) : timedNodes(n),
-                                                                                                      fTimedNodes(n,
-                                                                                                                  vector<set_timedNode>(
-                                                                                                                          n)),
-                                                                                                      bTimedNodes(n,
-                                                                                                                  vector<set_timedNode>(
-                                                                                                                          n)),
-                                                                                                      mangroves(n),
-                                                                                                      mangroveMap(
-                                                                                                              n),
-                                                                                                      G(n, eT, sT) {
+TEN::TEN(int n, int eT, int gtype, int tType, int seed, int sT) : timedNodes(n),
+                                                                  fTimedNodes(n,
+                                                                              vector<set_timedNode>(
+                                                                                      n)),
+                                                                  bTimedNodes(n,
+                                                                              vector<set_timedNode>(
+                                                                                      n)),
+                                                                  mangroves(n),
+                                                                  mangroveMap(
+                                                                          n),
+                                                                  G(n, eT, sT) {
     /*number of nodes, end time, graph type, travel time type, seed, start time (optional)*/
     string filename =
             "Data/n" + to_string(n) + "T" + to_string(eT) + "gt" + to_string(gtype) + "tt" + to_string(tType) +

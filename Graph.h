@@ -7,11 +7,14 @@
 
 #include <string>
 #include <vector>
-#include <map>
 #include <math.h>
 #include <climits>
 #include <queue>
 #include <iostream>
+
+#include <map>
+
+//#define map map
 
 using namespace std;
 
@@ -33,13 +36,13 @@ public:
         }
     };
 
-    Graph(const int n, const int eT, const int sT = 0, const int start_n = 0, const int end_n = -1);
+    Graph(int n, int eT, int sT = 0, int start_n = 0, int end_n = -1);
 
-    void addNode(const int i);
+    void addNode(int i);
 
-    void addNodes(const int n);
+    void addNodes(int n);
 
-    void addArc(const int start_idx, const int end_idx, vector<double> travel_times);
+    void addArc(int start_idx, int end_idx, vector<double> travel_times);
 
     //Properties
     int startT = 0;
@@ -71,19 +74,19 @@ public:
     };
 
     //Functions
-    double TT(const int start_idx, const int end_idx, const double start_t); // TT = Time Travel
+    double TT(int start_idx, int end_idx, double start_t); // TT = Time Travel
 
-    double iTT(const int start_idx, const int end_idx, const double end_t); // iTT = Inverse Time Travel
+    double iTT(int start_idx, int end_idx, double end_t); // iTT = Inverse Time Travel
 
     double FSP(const vector<double> &start_ts, const vector<double> &end_ts); // Forward shortest path
 
-    vector<double> FSPT(const int start_idx, const double start_t, vector<TypeArc> &arcs);
+    vector<double> FSPT(int start_idx, double start_t, vector<TypeArc> &arcs);
 
-    vector<double> BSPT(const int end_idx, const double end_t, vector<TypeArc> &arcs);
+    vector<double> BSPT(int end_idx, double end_t, vector<TypeArc> &arcs);
 
-    double minTT(const int start_idx, const int end_idx, double left_t, double right_t);
+    double minTT(int start_idx, int end_idx, double left_t, double right_t);
 
-    int min_idx_TT(const int start_idx, const int end_idx, const int left_t, const int right_t);
+    int min_idx_TT(int start_idx, int end_idx, int left_t, int right_t);
 
     bool checkFIFO();
 };

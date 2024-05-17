@@ -38,8 +38,8 @@ void writeSOutputCSVHeader(const string &filename) {
     ofstream myFile(filename, ofstream::app);
     myFile << "n" << ',';
     myFile << "T" << ',';
-    myFile << "gtype" << ',';
-    myFile << "ttype" << ',';
+    myFile << "g-type" << ',';
+    myFile << "t-type" << ',';
     myFile << "md" << ',';
     myFile << "Avg BP Explored" << ',';
     myFile << "Total BP" << ',';
@@ -58,7 +58,7 @@ void writeSOutputCSVHeader(const string &filename) {
 }
 
 void runTest(vector<int> ns, vector<int> endTs, vector<int> gTypes, vector<int> tTypes, vector<int> seeds,
-             const int common_startTime = 0, bool md = 1, bool mtt = 1, bool mdEnum = 1, bool mttEnum = 1) {
+             int common_startTime = 0, bool md = 1, bool mtt = 1, bool mdEnum = 1, bool mttEnum = 1) {
     /*
      * ns: vector of number of nodes
      * endTs: vector of end times
@@ -71,8 +71,11 @@ void runTest(vector<int> ns, vector<int> endTs, vector<int> gTypes, vector<int> 
      * mdEnum: Default value of 1 (true). If true, the function will run the minimum duration enumeration (mdEnum) test.
      * mttEnum: Default value of 1 (true). If true, the function will run the minimum travel time enumeration (mttEnum) test.
      */
-    string md_filename = "Results/experimentsMDMED.csv";
-    string mtt_filename = "Results/MTTBPMMED.csv";
+//    string md_filename = "Results/experimentsMDMED.csv";
+//    string mtt_filename = "Results/MTTBPMMED.csv";
+
+    string md_filename = "Results/experimentsMDMIN.csv";
+    string mtt_filename = "Results/MTTBPMMIN.csv";
     if (md) writeSOutputCSVHeader(md_filename);
     if (mtt) writeSOutputCSVHeader(mtt_filename);
     for (int n: ns) {
@@ -84,7 +87,8 @@ void runTest(vector<int> ns, vector<int> endTs, vector<int> gTypes, vector<int> 
                     SummaryOutput myMTTOutput(mtt_filename, n, common_endTime - common_startTime, gtype, ttype,
                                               seeds.size(),
                                               0);
-                    string filename = "Results/experimentsMDMEDlog.csv";
+//                    string filename = "Results/experimentsMDMEDlog.csv";
+                    string filename = "Results/experimentsMDMINlog.csv";
                     //string filename = "Results/n" + to_string(n) + "T" + to_string(common_endTime - common_startTime) + "g" + to_string(gtype) + "t" + to_string(ttype) + ".csv";
                     writeOutputCSVHeader(filename);
                     for (int seed: seeds) {
@@ -134,10 +138,11 @@ int main() {
 //    runTest({ 20 }, { 1000 }, { 1,2,3 }, { 1,2 }, { 1,2,3 }, 0, 0, 1, 0, 1);
 //    runTest({ 100 }, { 20 }, { 2 }, { 1 }, { 1 }, 0, 0, 1, 0, 1);
 //    runTest({30}, {20, 60, 100}, {2, 3}, {1, 2}, {1, 2, 3, 4, 5}, 0, 0, 1, 0, 1);
-    //runTest({ 50 }, { 40 }, { 1,2,3 }, { 1,2 }, { 1,2,3 }, 0, 0, 1, 0, 0);
+    runTest({50}, {40}, {1, 2, 3}, {1, 2}, {1, 2, 3}, 0, 0, 1, 0, 1);
 
 //    MDP
-        runTest({ 30 }, {60,80,100 }, { 1,2,3 }, { 1,2 }, { 1,2,3,4,5 }, 0, 1, 0, 1, 0);
+//    runTest({30}, {60, 100}, {1, 2, 3}, {1, 2}, {1, 2, 3, 4, 5}, 0, 0, 1, 0, 1);
+//    runTest({30}, {40}, {1, 2, 3}, {1, 2}, {1, 2, 3, 4, 5, 6, 7, 8, 9, 10}, 0, 0, 1, 0, 1);
 //    MTTP
     //    runTest({ 50 }, { 20,40,60,80,100 }, { 1,2,3 }, { 1,2 }, { 1,2,3,4,5,6,7,8,9,10 }, 0, 0, 1, 0, 1);
 
@@ -150,13 +155,4 @@ int main() {
     return 0;
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
-
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+//
