@@ -330,8 +330,11 @@ const TEN::Mangrove *TEN::addMangrove(int bpNode, int bpTime) {
 }
 
 pair<TEN::type_path, double> TEN::findLB() {
-    map<const TimedNode *, double> dp;
-    map<const TimedNode *, const TimedNode *> pred;
+//    map<const TimedNode *, double> dp;
+//    map<const TimedNode *, const TimedNode *> pred;
+
+    unordered_map<const TimedNode *, double, TimedNodeHash, TimedNodeEqual> dp;
+    unordered_map<const TimedNode *, const TimedNode *, TimedNodeHash, TimedNodeEqual> pred;
     priority_queue<TnTT, vector<TnTT>, TnTT_compare> pq;
     pq.push({origin, 0});
     dp[origin] = 0;
@@ -421,8 +424,8 @@ pair<TEN::type_path, double> TEN::findLB() {
 }
 
 pair<TEN::type_path, double> TEN::findUB() {
-    map<const TimedNode *, double> dp;
-    map<const TimedNode *, const TimedNode *> pred;
+    unordered_map<const TimedNode *, double, TimedNodeHash, TimedNodeEqual> dp;
+    unordered_map<const TimedNode *, const TimedNode *, TimedNodeHash, TimedNodeEqual> pred;
     priority_queue<TnTT, vector<TnTT>, TnTT_compare> pq;
     pq.push({origin, 0});
     dp[origin] = 0;

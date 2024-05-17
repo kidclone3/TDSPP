@@ -11,6 +11,7 @@
 
 //#include <map>
 #include <map>
+#include <unordered_map>
 
 //#define map map
 
@@ -108,6 +109,27 @@ public:
             bpNode = i;
             bpTime = k;
             this->forward = forward;
+        }
+    };
+
+    struct TimedNodeHash {
+        std::size_t operator()(const TimedNode *k) const {
+//            return ((hash<int>()(k->nodeID)
+//                     ^ (hash<double>()(k->time) << 1)) >> 1)
+//                   ^ (hash<int>()(k->bpNode) << 1)
+//                   ^ (hash<int>()(k->bpTime) << 1)
+//                   ^ (hash<bool>()(k->forward) << 1);
+            return reinterpret_cast<std::size_t>(k);
+        }
+    };
+
+    struct TimedNodeEqual {
+        bool operator()(const TimedNode *lhs, const TimedNode *rhs) const {
+            return lhs->nodeID == rhs->nodeID
+                   && lhs->time == rhs->time
+                   && lhs->bpNode == rhs->bpNode
+                   && lhs->bpTime == rhs->bpTime
+                   && lhs->forward == rhs->forward;
         }
     };
 
