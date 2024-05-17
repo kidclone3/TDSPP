@@ -89,7 +89,7 @@ public:
 
     void resolveABSPT(Abspt &curr);
 
-    TypeBP findBP(Abspt &curr, int option = 0);
+    TypeBP findBP(Abspt &curr, int option = 1);
 
     Output findMD();
 
@@ -170,8 +170,8 @@ public:
     typedef pair<const TimedNode *, const TimedNode *> TimedArc_ptr;
     map<TimedArc_ptr, double> ttMapLB;
     map<TimedArc_ptr, double> ttMapUB;
-    map<const TimedNode *, vector<const TimedNode *>> outMapLB; //internal arcs for LB
-    map<const TimedNode *, vector<const TimedNode *>> outMapUB; //internal arcs for UB
+    unordered_map<const TimedNode *, vector<const TimedNode *>, TimedNodeHash, TimedNodeEqual> outMapLB; //internal arcs for LB
+    unordered_map<const TimedNode *, vector<const TimedNode *>, TimedNodeHash, TimedNodeEqual> outMapUB; //internal arcs for UB
     typedef pair<const TimedNode *, double> TnTT;
 
     struct TnTT_compare {
@@ -189,7 +189,7 @@ public:
 
     pair<type_path, double> findUB();
 
-    vector<TypeBP> findBP(const Mangrove *curr, int addmult = 4, int option = 0);
+    vector<TypeBP> findBP(const Mangrove *curr, int addmult = 4, int option = 1);
 
     set<TypeBP> findBP(type_path &path);
 
