@@ -97,6 +97,7 @@ void runTest(vector<int> ns, vector<int> endTs, vector<int> gTypes, vector<int> 
                             Output output = my_ten.findMD();
                             output.writeOutputCSV(filename);
                             myMDOutput.updateSummaryOutput(output);
+
                         }
                         if (mdEnum) {
                             TEN my_ten(n, common_endTime, gtype, ttype, seed);
@@ -104,23 +105,23 @@ void runTest(vector<int> ns, vector<int> endTs, vector<int> gTypes, vector<int> 
                             output.writeOutputCSV(filename);
                             myMDOutput.updateSummaryOutput(output);
                         }
-                        if (mtt) {
-                            TEN my_ten(n, common_endTime, gtype, ttype, seed);
-                            Output output = my_ten.findMTT();
-                            output.writeOutputCSV(filename);
-                            myMTTOutput.updateSummaryOutput(output);
-                        }
-                        if (mttEnum) {
-                            TEN my_ten(n, common_endTime, gtype, ttype, seed);
-                            Output output = my_ten.findEnumMTT();
-                            output.writeOutputCSV(filename);
-                            myMTTOutput.updateSummaryOutput(output);
-                        }
+//                        if (mtt) {
+//                            TEN my_ten(n, common_endTime, gtype, ttype, seed);
+//                            Output output = my_ten.findMTT();
+//                            output.writeOutputCSV(filename);
+//                            myMTTOutput.updateSummaryOutput(output);
+//                        }
+//                        if (mttEnum) {
+//                            TEN my_ten(n, common_endTime, gtype, ttype, seed);
+//                            Output output = my_ten.findEnumMTT();
+//                            output.writeOutputCSV(filename);
+//                            myMTTOutput.updateSummaryOutput(output);
+//                        }
                     }
                     if (md) myMDOutput.calcSummaryOutput();
-                    if (mtt) myMTTOutput.calcSummaryOutput();
+//                    if (mtt) myMTTOutput.calcSummaryOutput();
                     if (md) myMDOutput.writeSOutputCSV();
-                    if (mtt) myMTTOutput.writeSOutputCSV();
+//                    if (mtt) myMTTOutput.writeSOutputCSV();
                 }
             }
         }
