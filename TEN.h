@@ -9,7 +9,6 @@
 #include "Output.h"
 #include "Graph.h"
 
-//#include <map>
 #include <map>
 #include <unordered_map>
 
@@ -182,27 +181,10 @@ public:
 
     typedef vector<const TimedNode *> type_path;
 
-//    //Minimum Travel Time Functions
-//    const Mangrove *addMangrove(int bpNode, int bpTime);
-//
-//    pair<type_path, double> findLB();
-//
-//    pair<type_path, double> findUB();
-//
-//    vector<TypeBP> findBP(const Mangrove *curr, int addmult = 4, int option = 1);
-//
-//    set<TypeBP> findBP(type_path &path);
-//
-//    bool isResolved(type_path &path);
-//
-//    Output findMTT();
-
 //    //Enumeration Functions
     Output findEnumMD();
 
     const Mangrove *addEnumMangrove(int bpNode, int bpTime);
-//
-//    Output findEnumMTT();
 
     //Print Functions
     void printCurrentABSPTs();
