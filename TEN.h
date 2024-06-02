@@ -189,9 +189,9 @@ public:
     //Print Functions
     void printCurrentABSPTs();
 
-    void printOptPath(const Abspt_it &abspt, Output &output, bool flag = 0);
+    void printOptPath(const Abspt_it &abspt, Output &output, bool flag = 1);
 
-    void printOptPath(const Mangrove &mangrove, Output &output, bool flag = 0);
+    void printOptPath(const Mangrove &mangrove, Output &output, bool flag = 1);
 
     void printOptMD(const Abspt_it &abspt) {
         cout << "Optimal MD starting time:" << abspt->times[G.startN] << endl;
